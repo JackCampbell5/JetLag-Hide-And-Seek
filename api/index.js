@@ -70,18 +70,26 @@ try {
   fastify.log.warn('Frontend not built yet. API only mode.');
 }
 
-// Start server
-const start = async () => {
-  try {
-    const port = process.env.PORT || 8000;
-    const host = process.env.HOST || '0.0.0.0';
+// Export for Vercel serverless
+export default async function handler(req, res) {
+  await fastify.ready();
+  fastify.server.emit('request', req, res);
+}
 
-    await fastify.listen({ port: parseInt(port), host });
-    fastify.log.info(`Server running at http://${host}:${port}`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
+// Start server (only when running locally, not on Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const start = async () => {
+    try {
+      const port = process.env.PORT || 8000;
+      const host = process.env.HOST || '0.0.0.0';
 
-start();
+      await fastify.listen({ port: parseInt(port), host });
+      fastify.log.info(`Server running at http://${host}:${port}`);
+    } catch (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+  };
+
+  start();
+}
