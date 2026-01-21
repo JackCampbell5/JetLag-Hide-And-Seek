@@ -104,51 +104,61 @@ const Card = ({
           }}
           style={{
             ...styles.menuButton,
-            ...(isMobile ? styles.menuButtonMobile : {})
+            ...(isMobile ? styles.menuButtonMobile : {}),
           }}
           aria-label="Card menu"
         >
           ⋮
         </button>
       )}
-      <div style={{
-        ...styles.cardHeader,
-        ...(isMobile ? styles.cardHeaderMobile : {})
-      }}>
+      <div
+        style={{
+          ...styles.cardHeader,
+          ...(isMobile ? styles.cardHeaderMobile : {}),
+        }}
+      >
         <strong>{card.name || card.Type}</strong>
       </div>
       <div style={styles.cardBody}>
         {card.color && (
-          <div style={{
-            ...styles.cardColor,
-            ...(isMobile ? styles.cardColorMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.cardColor,
+              ...(isMobile ? styles.cardColorMobile : {}),
+            }}
+          >
             {card.color}
           </div>
         )}
         {difficultyValue > 0 && (
-          <div style={{
-            ...styles.cardValues,
-            ...(isMobile ? styles.cardValuesMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.cardValues,
+              ...(isMobile ? styles.cardValuesMobile : {}),
+            }}
+          >
             <span>
               {allowedDifficulty[0]}: {difficultyValue}
             </span>
           </div>
         )}
         {card.Type === "Curse" && card.casting_cost && (
-          <div style={{
-            ...styles.castingCost,
-            ...(isMobile ? styles.castingCostMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.castingCost,
+              ...(isMobile ? styles.castingCostMobile : {}),
+            }}
+          >
             {getCastingCostSummary(card.casting_cost)}
           </div>
         )}
         {card.description && (
-          <div style={{
-            ...styles.cardDescription,
-            ...(isMobile ? styles.cardDescriptionMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.cardDescription,
+              ...(isMobile ? styles.cardDescriptionMobile : {}),
+            }}
+          >
             {getShortDescription(card.description)}
           </div>
         )}
@@ -163,7 +173,7 @@ const Card = ({
               }}
               style={{
                 ...styles.actionButton,
-                ...(isMobile ? styles.actionButtonMobile : {})
+                ...(isMobile ? styles.actionButtonMobile : {}),
               }}
             >
               Play
@@ -178,7 +188,7 @@ const Card = ({
               style={{
                 ...styles.actionButton,
                 ...(isMobile ? styles.actionButtonMobile : {}),
-                backgroundColor: "rgba(255,100,100,0.5)"
+                backgroundColor: "rgba(255,100,100,0.5)",
               }}
             >
               Discard

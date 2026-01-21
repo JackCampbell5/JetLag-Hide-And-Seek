@@ -1,8 +1,10 @@
 import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   if (!isOpen || !card) return null;
@@ -30,9 +32,9 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
   const backgroundColor = card.Type === 'Action' ? '#9370db' : card.Type === 'Curse' ? '#8B008B' : (colorMap[card.color] || '#ccc');
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
+    <div style={styles.overlay(theme)} onClick={onClose}>
       <div style={{
-        ...styles.modal,
+        ...styles.modal(theme),
         ...(isMobile ? styles.modalMobile : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
@@ -53,59 +55,59 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
           </div>
         </div>
 
-        <div style={styles.detailsSection}>
+        <div style={styles.detailsSection(theme)}>
           <h2 style={{
-            ...styles.title,
+            ...styles.title(theme),
             ...(isMobile ? styles.titleMobile : {})
           }}>{card.name || card.Type}</h2>
-          <div style={styles.typeTag}>
+          <div style={styles.typeTag(theme)}>
             {card.Type}
           </div>
 
           {card.description && (
-            <div style={styles.descriptionBox}>
-              <h3 style={styles.sectionTitle}>Description</h3>
-              <p style={styles.descriptionText}>{card.description}</p>
+            <div style={styles.descriptionBox(theme)}>
+              <h3 style={styles.sectionTitle(theme)}>Description</h3>
+              <p style={styles.descriptionText(theme)}>{card.description}</p>
             </div>
           )}
 
           {card.Type === 'Curse' && card.curse_text && (
-            <div style={styles.curseTextBox}>
-              <h3 style={styles.sectionTitle}>Curse Effect</h3>
-              <p style={styles.curseText}>{card.curse_text}</p>
+            <div style={styles.curseTextBox(theme)}>
+              <h3 style={styles.sectionTitle(theme)}>Curse Effect</h3>
+              <p style={styles.curseText(theme)}>{card.curse_text}</p>
             </div>
           )}
 
           {card.Type === 'Curse' && card.casting_cost && (
-            <div style={styles.castingCostBox}>
-              <h3 style={styles.sectionTitle}>Casting Cost</h3>
+            <div style={styles.castingCostBox(theme)}>
+              <h3 style={styles.sectionTitle(theme)}>Casting Cost</h3>
               <div style={styles.costList}>
                 {card.casting_cost.discard > 0 && (
-                  <div style={styles.costRow}>
+                  <div style={styles.costRow(theme)}>
                     <span style={styles.costIcon}>🗑️</span>
                     <span>Discard {card.casting_cost.discard} card{card.casting_cost.discard > 1 ? 's' : ''}</span>
                   </div>
                 )}
                 {card.casting_cost.photo && (
-                  <div style={styles.costRow}>
+                  <div style={styles.costRow(theme)}>
                     <span style={styles.costIcon}>📷</span>
                     <span>Photo: {card.casting_cost.photo}</span>
                   </div>
                 )}
                 {card.casting_cost.location && (
-                  <div style={styles.costRow}>
+                  <div style={styles.costRow(theme)}>
                     <span style={styles.costIcon}>📍</span>
                     <span>Location: {card.casting_cost.location}</span>
                   </div>
                 )}
                 {card.casting_cost.die_roll && (
-                  <div style={styles.costRow}>
+                  <div style={styles.costRow(theme)}>
                     <span style={styles.costIcon}>🎲</span>
                     <span>Die Roll: {card.casting_cost.die_roll}</span>
                   </div>
                 )}
                 {!card.casting_cost.discard && !card.casting_cost.photo && !card.casting_cost.location && !card.casting_cost.die_roll && (
-                  <div style={styles.costRow}>
+                  <div style={styles.costRow(theme)}>
                     <span style={styles.costIcon}>✓</span>
                     <span>No casting cost</span>
                   </div>
@@ -115,31 +117,31 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
           )}
 
           {card.Type === 'Time Bonus' && (
-            <div style={styles.valuesBox}>
-              <h3 style={styles.sectionTitle}>Time Values</h3>
+            <div style={styles.valuesBox(theme)}>
+              <h3 style={styles.sectionTitle(theme)}>Time Values</h3>
               <div style={styles.valueGrid}>
-                <div style={styles.valueItem}>
-                  <span style={styles.valueLabel}>Small:</span>
+                <div style={styles.valueItem(theme)}>
+                  <span style={styles.valueLabel(theme)}>Small:</span>
                   <span style={styles.valueNumber}>{card.Small} min</span>
                 </div>
-                <div style={styles.valueItem}>
-                  <span style={styles.valueLabel}>Medium:</span>
+                <div style={styles.valueItem(theme)}>
+                  <span style={styles.valueLabel(theme)}>Medium:</span>
                   <span style={styles.valueNumber}>{card.Medium} min</span>
                 </div>
-                <div style={styles.valueItem}>
-                  <span style={styles.valueLabel}>Large:</span>
+                <div style={styles.valueItem(theme)}>
+                  <span style={styles.valueLabel(theme)}>Large:</span>
                   <span style={styles.valueNumber}>{card.Large} min</span>
                 </div>
               </div>
-              <div style={styles.currentValue}>
+              <div style={styles.currentValue(theme)}>
                 Current Game: <strong>{allowedDifficulty} = {difficultyValue} min</strong>
               </div>
             </div>
           )}
 
-          <div style={styles.rarityBox}>
-            <h3 style={styles.sectionTitle}>Rarity</h3>
-            <p style={styles.rarityText}>
+          <div style={styles.rarityBox(theme)}>
+            <h3 style={styles.sectionTitle(theme)}>Rarity</h3>
+            <p style={styles.rarityText(theme)}>
               {card.cards} {card.cards === 1 ? 'card' : 'cards'} in deck
               {card.cards <= 2 && ' - Very Rare'}
               {card.cards > 2 && card.cards <= 4 && ' - Rare'}
@@ -161,20 +163,20 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
 };
 
 const styles = {
-  overlay: {
+  overlay: (theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: theme.colors.modalOverlay,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: 'white',
+  }),
+  modal: (theme) => ({
+    backgroundColor: theme.colors.modalBackground,
     borderRadius: '12px',
     padding: '30px',
     maxWidth: '600px',
@@ -182,7 +184,8 @@ const styles = {
     maxHeight: '90vh',
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   modalMobile: {
     padding: '15px',
     maxWidth: '95vw',
@@ -227,132 +230,135 @@ const styles = {
     gap: '5px',
     textAlign: 'center',
   },
-  detailsSection: {
-    color: '#333',
-  },
-  title: {
+  detailsSection: (theme) => ({
+    color: theme.colors.text,
+  }),
+  title: (theme) => ({
     fontSize: '24px',
     marginBottom: '10px',
     textAlign: 'center',
-    color: '#333',
-  },
+    color: theme.colors.text,
+  }),
   titleMobile: {
     fontSize: '20px',
   },
-  typeTag: {
+  typeTag: (theme) => ({
     display: 'inline-block',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: theme.colors.backgroundAlt,
     padding: '5px 15px',
     borderRadius: '20px',
     fontSize: '12px',
     fontWeight: 'bold',
-    color: '#555',
+    color: theme.colors.textSecondary,
     marginBottom: '20px',
     textAlign: 'center',
     width: '100%',
-  },
-  sectionTitle: {
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  sectionTitle: (theme) => ({
     fontSize: '16px',
     fontWeight: 'bold',
     marginBottom: '10px',
-    color: '#555',
-  },
-  descriptionBox: {
+    color: theme.colors.textSecondary,
+  }),
+  descriptionBox: (theme) => ({
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: theme.colors.backgroundAlt,
     borderRadius: '8px',
-    border: '1px solid #e0e0e0',
-  },
-  descriptionText: {
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  descriptionText: (theme) => ({
     fontSize: '14px',
     lineHeight: '1.6',
-    color: '#333',
+    color: theme.colors.text,
     margin: 0,
-  },
-  valuesBox: {
+  }),
+  valuesBox: (theme) => ({
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#e3f2fd',
+    backgroundColor: theme.colors.info,
     borderRadius: '8px',
-    border: '1px solid #90caf9',
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   valueGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '10px',
     marginBottom: '15px',
   },
-  valueItem: {
+  valueItem: (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: '10px',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.backgroundCard,
     borderRadius: '6px',
-  },
-  valueLabel: {
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  valueLabel: (theme) => ({
     fontSize: '12px',
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginBottom: '5px',
-  },
+  }),
   valueNumber: {
     fontSize: '18px',
     fontWeight: 'bold',
     color: '#2196F3',
   },
-  currentValue: {
+  currentValue: (theme) => ({
     textAlign: 'center',
     fontSize: '14px',
     color: '#1976D2',
     padding: '10px',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.backgroundCard,
     borderRadius: '6px',
-  },
-  rarityBox: {
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  rarityBox: (theme) => ({
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#fff3cd',
+    backgroundColor: theme.colors.warning,
     borderRadius: '8px',
-    border: '1px solid #ffc107',
-  },
-  rarityText: {
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  rarityText: (theme) => ({
     fontSize: '14px',
-    color: '#333',
+    color: theme.colors.text,
     margin: 0,
-  },
-  curseTextBox: {
+  }),
+  curseTextBox: (theme) => ({
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#f3e5f5',
+    backgroundColor: theme.colors.curse,
     borderRadius: '8px',
-    border: '2px solid #8b008b',
-  },
-  curseText: {
+    border: `2px solid ${theme.colors.curseText}`,
+  }),
+  curseText: (theme) => ({
     fontSize: '14px',
     lineHeight: '1.6',
-    color: '#333',
+    color: theme.colors.text,
     margin: 0,
-  },
-  castingCostBox: {
+  }),
+  castingCostBox: (theme) => ({
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#ede7f6',
+    backgroundColor: theme.colors.curse,
     borderRadius: '8px',
-    border: '1px solid #9370db',
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   costList: {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
   },
-  costRow: {
+  costRow: (theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
     fontSize: '14px',
-    color: '#333',
-  },
+    color: theme.colors.text,
+  }),
   costIcon: {
     fontSize: '20px',
   },

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GameProvider } from './context/GameContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import GameBoard from './components/Game/GameBoard';
@@ -72,11 +73,13 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <GameProvider>
-        <AppRoutes />
-      </GameProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <GameProvider>
+          <AppRoutes />
+        </GameProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

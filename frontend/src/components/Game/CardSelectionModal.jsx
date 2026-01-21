@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from './Card';
+import { useTheme } from '../../context/ThemeContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CardSelectionModal = ({
@@ -14,6 +15,7 @@ const CardSelectionModal = ({
   title,
   confirmText
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   if (!isOpen) return null;
@@ -33,19 +35,19 @@ const CardSelectionModal = ({
   };
 
   return (
-    <div style={styles.overlay}>
+    <div style={styles.overlay(theme)}>
       <div style={{
-        ...styles.modal,
+        ...styles.modal(theme),
         ...(isMobile ? styles.modalMobile : {})
       }}>
         <h2 style={{
-          ...styles.title,
+          ...styles.title(theme),
           ...(isMobile ? styles.titleMobile : {})
         }}>
           {title || `Select ${requiredCount} Card${requiredCount > 1 ? 's' : ''} to Discard`}
         </h2>
         <p style={{
-          ...styles.subtitle,
+          ...styles.subtitle(theme),
           ...(isMobile ? styles.subtitleMobile : {})
         }}>
           Selected: {selectedPositions.length} / {requiredCount}
@@ -66,14 +68,14 @@ const CardSelectionModal = ({
                 key={position}
                 onClick={() => handleCardClick(position)}
                 style={{
-                  ...styles.cardContainer,
+                  ...styles.cardContainer(theme),
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   opacity: isDisabled ? 0.4 : 1,
                   border: isSelected
                     ? '4px solid #4CAF50'
                     : isPlayed
                     ? '4px solid #f44336'
-                    : '2px solid #ccc',
+                    : `2px solid ${theme.colors.border}`,
                   transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                 }}
               >
@@ -81,7 +83,7 @@ const CardSelectionModal = ({
                 {card ? (
                   <Card card={card} canPlay={false} />
                 ) : (
-                  <div style={styles.emptyCard}>Empty</div>
+                  <div style={styles.emptyCard(theme)}>Empty</div>
                 )}
                 {isPlayed && <div style={styles.badge}>Playing This</div>}
                 {isSelected && <div style={styles.selectedBadge}>Selected</div>}
@@ -122,20 +124,20 @@ const CardSelectionModal = ({
 };
 
 const styles = {
-  overlay: {
+  overlay: (theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: theme.colors.modalOverlay,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: 'white',
+  }),
+  modal: (theme) => ({
+    backgroundColor: theme.colors.modalBackground,
     borderRadius: '12px',
     padding: '30px',
     maxWidth: '900px',
@@ -143,27 +145,28 @@ const styles = {
     maxHeight: '90vh',
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   modalMobile: {
     padding: '15px',
     maxWidth: '95vw',
     maxHeight: '95vh',
   },
-  title: {
+  title: (theme) => ({
     textAlign: 'center',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: '10px',
     fontSize: '24px',
-  },
+  }),
   titleMobile: {
     fontSize: '18px',
   },
-  subtitle: {
+  subtitle: (theme) => ({
     textAlign: 'center',
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginBottom: '20px',
     fontSize: '16px',
-  },
+  }),
   subtitleMobile: {
     fontSize: '14px',
   },
@@ -178,13 +181,13 @@ const styles = {
     gap: '10px',
     marginBottom: '20px',
   },
-  cardContainer: {
+  cardContainer: (theme) => ({
     position: 'relative',
     borderRadius: '8px',
     padding: '10px',
     transition: 'all 0.2s ease',
-    backgroundColor: '#f9f9f9',
-  },
+    backgroundColor: theme.colors.backgroundAlt,
+  }),
   positionLabel: {
     position: 'absolute',
     top: '5px',
@@ -197,14 +200,14 @@ const styles = {
     fontWeight: 'bold',
     zIndex: 10,
   },
-  emptyCard: {
+  emptyCard: (theme) => ({
     height: '180px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#999',
+    color: theme.colors.textMuted,
     fontSize: '14px',
-  },
+  }),
   badge: {
     position: 'absolute',
     bottom: '10px',

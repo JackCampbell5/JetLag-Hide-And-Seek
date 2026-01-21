@@ -1,8 +1,10 @@
 import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   if (!isOpen || !curseData) return null;
@@ -62,9 +64,9 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) 
   const castingCostItems = getCastingCostItems();
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
+    <div style={styles.overlay(theme)} onClick={onClose}>
       <div style={{
-        ...styles.modal,
+        ...styles.modal(theme),
         ...(isMobile ? styles.modalMobile : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
@@ -139,7 +141,7 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) 
 };
 
 const styles = {
-  overlay: {
+  overlay: (theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
@@ -150,9 +152,9 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: '#2a1a3d',
+  }),
+  modal: (theme) => ({
+    backgroundColor: theme.isDarkMode ? '#2a1a3d' : '#3d2554',
     borderRadius: '16px',
     padding: '0',
     maxWidth: '700px',
@@ -161,7 +163,7 @@ const styles = {
     overflowY: 'auto',
     boxShadow: '0 8px 40px rgba(139, 0, 139, 0.6)',
     border: '3px solid #8b008b',
-  },
+  }),
   modalMobile: {
     maxWidth: '95vw',
     maxHeight: '95vh',

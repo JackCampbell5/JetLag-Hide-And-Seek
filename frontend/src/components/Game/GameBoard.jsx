@@ -3,6 +3,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGame } from "../../context/GameContext";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import { useIsMobile } from "../../hooks/useMediaQuery";
 import { stats } from "../../api/client";
 import Hand from "./Hand";
@@ -34,6 +35,7 @@ const GameBoard = () => {
     gameSize,
     updateGameSize,
   } = useGame();
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [selectedCards, setSelectedCards] = useState([]);
   const [error, setError] = useState("");
@@ -360,7 +362,7 @@ const GameBoard = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div style={styles.container}>
+      <div style={styles.container(theme)}>
         <CardSelectionModal
           isOpen={showDiscardModal}
           hand={gameState.hand}
@@ -413,21 +415,34 @@ const GameBoard = () => {
         />
 
         <div style={{
-          ...styles.header,
+          ...styles.header(theme),
           ...(isMobile ? styles.headerMobile : {})
         }}>
-          <h1 style={isMobile ? styles.titleMobile : {}}>JetLag Card Game</h1>
+          <h1 style={{
+            ...(isMobile ? styles.titleMobile : {}),
+            color: theme.colors.text
+          }}>JetLag Card Game</h1>
           <div style={{
             ...styles.headerRight,
             ...(isMobile ? styles.headerRightMobile : {})
           }}>
+            <button
+              onClick={toggleTheme}
+              style={{
+                ...styles.themeToggle,
+                ...(isMobile ? { order: -1 } : {})
+              }}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
             <GameSizeSelector
               gameSize={gameSize}
               onGameSizeChange={updateGameSize}
               compact={true}
             />
             <span style={{
-              ...styles.welcomeText,
+              ...styles.welcomeText(theme),
               ...(isMobile ? { whiteSpace: 'normal', textAlign: 'center' } : {})
             }}>Welcome, {user?.username}!</span>
             <button onClick={logout} style={{
@@ -441,8 +456,11 @@ const GameBoard = () => {
 
         {error && <div style={styles.error}>{error}</div>}
 
-        <div style={styles.questionTypes}>
-          <h3 style={isMobile ? styles.questionTypesHeaderMobile : {}}>
+        <div style={styles.questionTypes(theme)}>
+          <h3 style={{
+            ...(isMobile ? styles.questionTypesHeaderMobile : {}),
+            color: theme.colors.text
+          }}>
             Select Question Type:
           </h3>
 
@@ -489,8 +507,8 @@ const GameBoard = () => {
         </div>
 
         {drawnCards.length > 0 && (
-          <div style={styles.drawnCards}>
-            <h3>Drawn Cards (Select {pickCount}):</h3>
+          <div style={styles.drawnCards(theme)}>
+            <h3 style={{ color: theme.colors.text }}>Drawn Cards (Select {pickCount}):</h3>
             <div style={styles.cardGrid}>
               {drawnCards.map((card, idx) => (
                 <div
@@ -528,8 +546,8 @@ const GameBoard = () => {
           onCardClick={handleCardClick}
         />
 
-        <div style={styles.deckInfo}>
-          <h3>Deck Info</h3>
+        <div style={styles.deckInfo(theme)}>
+          <h3 style={{ color: theme.colors.text }}>Deck Info</h3>
           <p>
             Deck Size:{" "}
             {gameState.hand.reduce(
@@ -558,22 +576,25 @@ const GameBoard = () => {
 };
 
 const styles = {
-  container: {
+  container: (theme) => ({
     padding: "20px",
     maxWidth: "1200px",
     margin: "0 auto",
-  },
-  header: {
+    backgroundColor: theme.colors.background,
+    minHeight: "100vh",
+  }),
+  header: (theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "20px",
     padding: "10px",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.header,
     borderRadius: "8px",
     flexWrap: "wrap",
     gap: "10px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   headerMobile: {
     flexDirection: "column",
     alignItems: "stretch",
@@ -595,9 +616,19 @@ const styles = {
     alignItems: "stretch",
     gap: "10px",
   },
-  welcomeText: {
-    whiteSpace: "nowrap",
+  themeToggle: {
+    padding: "8px 12px",
+    backgroundColor: "transparent",
+    border: "2px solid currentColor",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "18px",
+    transition: "transform 0.2s",
   },
+  welcomeText: (theme) => ({
+    whiteSpace: "nowrap",
+    color: theme.colors.text,
+  }),
   logoutButton: {
     padding: "8px 16px",
     backgroundColor: "#f44336",
@@ -614,12 +645,13 @@ const styles = {
     marginBottom: "20px",
     textAlign: "center",
   },
-  questionTypes: {
+  questionTypes: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: theme.colors.backgroundAlt,
     borderRadius: "8px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   questionTypesHeaderMobile: {
     fontSize: "16px",
     marginBottom: "10px",
@@ -656,12 +688,13 @@ const styles = {
     border: "3px solid #4CAF50",
     boxShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
   },
-  drawnCards: {
+  drawnCards: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
-    backgroundColor: "#fff3cd",
+    backgroundColor: theme.colors.warning,
     borderRadius: "8px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   cardGrid: {
     display: "flex",
     gap: "10px",
@@ -688,12 +721,14 @@ const styles = {
     marginLeft: "auto",
     marginRight: "auto",
   },
-  deckInfo: {
+  deckInfo: (theme) => ({
     marginTop: "30px",
     padding: "20px",
-    backgroundColor: "#e3f2fd",
+    backgroundColor: theme.colors.info,
     borderRadius: "8px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+    color: theme.colors.text,
+  }),
   resetButton: {
     marginTop: "15px",
     padding: "10px 20px",

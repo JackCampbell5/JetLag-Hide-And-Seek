@@ -1,15 +1,17 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   if (!isOpen) return null;
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
+    <div style={styles.overlay(theme)} onClick={onClose}>
       <div style={{
-        ...styles.modal,
+        ...styles.modal(theme),
         ...(isMobile ? styles.modalMobile : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
@@ -23,17 +25,17 @@ const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
         </div>
 
         <div style={{
-          ...styles.content,
+          ...styles.content(theme),
           ...(isMobile ? styles.contentMobile : {})
         }}>
           <div style={styles.warningIcon}>⚠️</div>
           <p style={{
-            ...styles.warningText,
+            ...styles.warningText(theme),
             ...(isMobile ? styles.warningTextMobile : {})
           }}>
             This will permanently reset:
           </p>
-          <ul style={styles.resetList}>
+          <ul style={styles.resetList(theme)}>
             <li>Your current hand (all cards will be cleared)</li>
             <li>Total cards drawn statistic</li>
             <li>Total cards played statistic</li>
@@ -70,20 +72,20 @@ const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 };
 
 const styles = {
-  overlay: {
+  overlay: (theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: theme.colors.modalOverlay,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: '#ffffff',
+  }),
+  modal: (theme) => ({
+    backgroundColor: theme.colors.modalBackground,
     borderRadius: '12px',
     padding: '0',
     maxWidth: '500px',
@@ -92,7 +94,7 @@ const styles = {
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
     border: '2px solid #f44336',
-  },
+  }),
   modalMobile: {
     maxWidth: '95vw',
     maxHeight: '95vh',
@@ -116,10 +118,11 @@ const styles = {
   titleMobile: {
     fontSize: '20px',
   },
-  content: {
+  content: (theme) => ({
     padding: '30px',
     textAlign: 'center',
-  },
+    color: theme.colors.text,
+  }),
   contentMobile: {
     padding: '20px',
   },
@@ -127,22 +130,22 @@ const styles = {
     fontSize: '48px',
     marginBottom: '15px',
   },
-  warningText: {
+  warningText: (theme) => ({
     fontSize: '18px',
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: '15px',
-  },
+  }),
   warningTextMobile: {
     fontSize: '16px',
   },
-  resetList: {
+  resetList: (theme) => ({
     textAlign: 'left',
     margin: '20px auto',
     maxWidth: '400px',
     lineHeight: '1.8',
-    color: '#555',
-  },
+    color: theme.colors.textSecondary,
+  }),
   confirmText: {
     fontSize: '16px',
     fontWeight: 'bold',

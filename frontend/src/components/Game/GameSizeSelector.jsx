@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
+  const { theme } = useTheme();
   const sizes = [
     { value: 3, label: 'Small', description: 'Show only Small difficulty values (shortest duration)' },
     { value: 4, label: 'Medium', description: 'Show only Medium difficulty values' },
@@ -10,11 +12,11 @@ const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
   if (compact) {
     return (
       <div style={styles.compactContainer}>
-        <label style={styles.compactLabel}>Difficulty:</label>
+        <label style={styles.compactLabel(theme)}>Difficulty:</label>
         <select
           value={gameSize}
           onChange={(e) => onGameSizeChange(Number(e.target.value))}
-          style={styles.compactSelect}
+          style={styles.compactSelect(theme)}
         >
           {sizes.map((size) => (
             <option key={size.value} value={size.value}>
@@ -28,7 +30,7 @@ const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
 
   return (
     <div style={styles.container}>
-      <label style={styles.label}>Game Difficulty Level</label>
+      <label style={styles.label(theme)}>Game Difficulty Level</label>
       <div style={styles.buttonGroup}>
         {sizes.map((size) => (
           <button
@@ -36,7 +38,7 @@ const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
             type="button"
             onClick={() => onGameSizeChange(size.value)}
             style={{
-              ...styles.sizeButton,
+              ...styles.sizeButton(theme),
               ...(gameSize === size.value ? styles.sizeButtonActive : {}),
             }}
             title={size.description}
@@ -45,7 +47,7 @@ const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
           </button>
         ))}
       </div>
-      <p style={styles.description}>
+      <p style={styles.description(theme)}>
         Choose which card difficulty level to play with (Small, Medium, or Large)
       </p>
     </div>
@@ -56,61 +58,62 @@ const styles = {
   container: {
     marginBottom: '20px',
   },
-  label: {
+  label: (theme) => ({
     display: 'block',
     marginBottom: '10px',
-    color: '#555',
+    color: theme.colors.text,
     fontWeight: '500',
     fontSize: '16px',
-  },
+  }),
   buttonGroup: {
     display: 'flex',
     gap: '10px',
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
-  sizeButton: {
+  sizeButton: (theme) => ({
     padding: '12px 20px',
-    backgroundColor: '#e0e0e0',
-    color: '#333',
-    border: '2px solid #ccc',
+    backgroundColor: theme.colors.backgroundAlt,
+    color: theme.colors.text,
+    border: `2px solid ${theme.colors.border}`,
     borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
     minWidth: '50px',
     transition: 'all 0.2s',
-  },
+  }),
   sizeButtonActive: {
     backgroundColor: '#4CAF50',
     color: 'white',
     border: '2px solid #388E3C',
     transform: 'scale(1.05)',
   },
-  description: {
+  description: (theme) => ({
     marginTop: '10px',
     fontSize: '14px',
-    color: '#666',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
-  },
+  }),
   compactContainer: {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
   },
-  compactLabel: {
+  compactLabel: (theme) => ({
     fontSize: '14px',
-    color: '#555',
+    color: theme.colors.text,
     fontWeight: '500',
-  },
-  compactSelect: {
+  }),
+  compactSelect: (theme) => ({
     padding: '6px 10px',
     fontSize: '14px',
-    border: '1px solid #ccc',
+    border: `1px solid ${theme.colors.border}`,
     borderRadius: '4px',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.input,
+    color: theme.colors.text,
     cursor: 'pointer',
-  },
+  }),
 };
 
 export default GameSizeSelector;
