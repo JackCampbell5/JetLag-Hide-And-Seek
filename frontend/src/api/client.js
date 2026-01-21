@@ -32,7 +32,7 @@ export const game = {
   getState: () => api.get('/game/state'),
   drawCards: (questionType) => api.post('/game/draw', { question_type: questionType }),
   updateHand: (hand) => api.put('/game/hand', { hand }),
-  updateHandSize: (handSize) => api.put('/game/hand-size', { game_size: handSize }),
+  updateGameSize: (gameSize) => api.put('/game/hand-size', { game_size: gameSize }),
   playCard: (handPosition, discardPositions = null) =>
     api.post('/game/play', { hand_position: handPosition, discard_positions: discardPositions }),
   getDeckInfo: () => api.get('/game/deck'),

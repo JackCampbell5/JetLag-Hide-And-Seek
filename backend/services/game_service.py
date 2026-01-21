@@ -7,25 +7,25 @@ from schemas.game_schema import Card
 from services.card_service import generate_random_cards
 
 
-def get_or_create_game_state(db: Session, user: User, hand_size: int = 5) -> UserGameState:
+def get_or_create_game_state(db: Session, user: User, game_size: int = 5) -> UserGameState:
     """
     Get or create game state for a user.
 
-    Note: hand_size represents game difficulty level (3=Small, 4=Medium, 5=Large),
+    Note: game_size represents game difficulty level (3=Small, 4=Medium, 5=Large),
     NOT the number of hand positions. Hand is always 5 positions.
     """
     game_state = db.query(UserGameState).filter(UserGameState.user_id == user.id).first()
 
     if not game_state:
         # Validate game_size (difficulty level)
-        if hand_size < 3 or hand_size > 5:
-            hand_size = 5  # Default to 5 (Large) if invalid
+        if game_size < 3 or game_size > 5:
+            game_size = 5  # Default to 5 (Large) if invalid
 
         # Create new game state with empty hand (always 5 slots)
         game_state = UserGameState(
             user_id=user.id,
             hand=[None] * 5,  # Always 5 positions
-            hand_size=hand_size,  # This is difficulty level (3-5)
+            game_size=game_size,  # This is difficulty level (3-5)
             deck=[],
             discard_pile=[]
         )
@@ -82,7 +82,7 @@ def play_card_from_hand(db: Session, user: User, hand_position: int, discard_pos
     """
     game_state = get_or_create_game_state(db, user)
 
-    if hand_position < 0 or hand_position >= game_state.hand_size:
+    if hand_position < 0 or hand_position >= len(game_state.hand):
         raise ValueError("Invalid hand position")
 
     card = game_state.hand[hand_position]
@@ -111,7 +111,7 @@ def play_card_from_hand(db: Session, user: User, hand_position: int, discard_pos
 
             # Validate discard positions
             for pos in discard_positions:
-                if pos < 0 or pos >= game_state.hand_size or pos == hand_position:
+                if pos < 0 or pos >= len(game_state.hand) or pos == hand_position:
                     raise ValueError(f"Invalid discard position: {pos}")
                 if not game_state.hand[pos]:
                     raise ValueError(f"No card at position {pos}")
@@ -180,7 +180,7 @@ def handle_discard_draw(db: Session, game_state: UserGameState, user: User,
 
     # Validate discard positions
     for pos in discard_positions:
-        if pos < 0 or pos >= game_state.hand_size or pos == played_position:
+        if pos < 0 or pos >= len(game_state.hand) or pos == played_position:
             raise ValueError(f"Invalid discard position: {pos}")
         if not game_state.hand[pos]:
             raise ValueError(f"No card at position {pos}")
@@ -199,7 +199,7 @@ def handle_discard_draw(db: Session, game_state: UserGameState, user: User,
     flag_modified(game_state, "discard_pile")
 
     # Draw new cards filtered by game difficulty
-    new_cards = generate_random_cards(draw_count, game_state.hand_size)
+    new_cards = generate_random_cards(draw_count, game_state.game_size)
 
     # Update statistics
     update_statistics(db, user.id, cards_drawn=len(new_cards))
@@ -262,7 +262,7 @@ def place_pending_cards(db: Session, user: User, cards_to_place: List[Dict], dis
         raise ValueError("Cannot select the same card position multiple times")
 
     for pos in discard_positions:
-        if pos < 0 or pos >= game_state.hand_size:
+        if pos < 0 or pos >= len(game_state.hand):
             raise ValueError(f"Invalid discard position: {pos}")
         if not game_state.hand[pos]:
             raise ValueError(f"No card at position {pos}")
@@ -308,25 +308,25 @@ def update_statistics(db: Session, user_id: int, cards_drawn: int = 0, cards_pla
         db.commit()
 
 
-def update_hand_size(db: Session, user: User, new_game_size: int) -> UserGameState:
+def update_game_size(db: Session, user: User, new_game_size: int) -> UserGameState:
     """
     Update the game difficulty level (game_size) for a user's game state.
 
     Note: This does NOT resize the hand array - hand always stays at 5 positions.
-    The hand_size field stores the difficulty level (3=Small, 4=Medium, 5=Large).
+    The game_size field stores the difficulty level (3=Small, 4=Medium, 5=Large).
     """
     # Validate game_size (difficulty level)
     if new_game_size < 3 or new_game_size > 5:
         raise ValueError("Game size must be between 3 and 5")
 
     game_state = get_or_create_game_state(db, user)
-    old_game_size = game_state.hand_size
+    old_game_size = game_state.game_size
 
     if old_game_size == new_game_size:
         return game_state
 
     # Update game_size field (hand stays at 5 positions)
-    game_state.hand_size = new_game_size
+    game_state.game_size = new_game_size
     db.commit()
     db.refresh(game_state)
 

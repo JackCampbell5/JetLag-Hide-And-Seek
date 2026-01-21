@@ -9,7 +9,7 @@ class UserGameState(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     hand = Column(JSON, default=list)  # Always 5 positions, null for empty slots
-    hand_size = Column(Integer, default=5)  # Game difficulty level (3=Small, 4=Medium, 5=Large)
+    game_size = Column(Integer, default=5)  # Game difficulty level (3=Small, 4=Medium, 5=Large)
     deck = Column(JSON, default=list)  # Deck composition for tracking
     discard_pile = Column(JSON, default=list)  # Discarded cards
     created_at = Column(DateTime(timezone=True), server_default=func.now())

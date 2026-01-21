@@ -28,7 +28,7 @@ class Card(BaseModel):
 
 class GameStateResponse(BaseModel):
     hand: List[Optional[Card]]  # Always 5 positions
-    hand_size: int  # Game difficulty level (3=Small, 4=Medium, 5=Large)
+    game_size: int  # Game difficulty level (3=Small, 4=Medium, 5=Large)
     deck_size: int
     deck_composition: Dict[str, int]  # Card type -> count
 

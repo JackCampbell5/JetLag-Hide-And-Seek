@@ -19,7 +19,7 @@ from services.game_service import (
     get_or_create_game_state,
     get_deck_composition,
     update_user_hand,
-    update_hand_size,
+    update_game_size,
     play_card_from_hand,
     place_pending_cards,
     log_game_action,
@@ -38,7 +38,7 @@ async def get_game_state(
 
     return GameStateResponse(
         hand=game_state.hand,
-        hand_size=game_state.hand_size,
+        game_size=game_state.game_size,
         deck_size=len(game_state.deck),
         deck_composition=get_deck_composition(game_state)
     )
@@ -62,7 +62,7 @@ async def draw_cards(
     game_state = get_or_create_game_state(db, current_user)
 
     # Generate random cards filtered by game difficulty
-    cards = generate_random_cards(draw_count, game_state.hand_size)
+    cards = generate_random_cards(draw_count, game_state.game_size)
 
     # Log action
     log_game_action(db, current_user.id, "draw_cards", {
@@ -93,7 +93,7 @@ async def update_hand(
 
         return GameStateResponse(
             hand=game_state.hand,
-            hand_size=game_state.hand_size,
+            game_size=game_state.game_size,
             deck_size=len(game_state.deck),
             deck_composition=get_deck_composition(game_state)
         )
@@ -105,18 +105,18 @@ async def update_hand(
 
 
 @router.put("/hand-size", response_model=GameStateResponse)
-async def change_hand_size(
+async def change_game_size(
     request: UpdateHandSizeRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """Update the game difficulty level (3=Small, 4=Medium, 5=Large)"""
     try:
-        game_state = update_hand_size(db, current_user, request.game_size)
+        game_state = update_game_size(db, current_user, request.game_size)
 
         return GameStateResponse(
             hand=game_state.hand,
-            hand_size=game_state.hand_size,
+            game_size=game_state.game_size,
             deck_size=len(game_state.deck),
             deck_composition=get_deck_composition(game_state)
         )
@@ -144,7 +144,7 @@ async def play_card(
         response = {
             "success": True,
             "hand": game_state.hand,
-            "hand_size": game_state.hand_size,
+            "game_size": game_state.game_size,
             "deck_size": len(game_state.deck),
             "deck_composition": get_deck_composition(game_state),
             "message": "Card played successfully"
@@ -199,7 +199,7 @@ async def place_cards(
 
         return GameStateResponse(
             hand=game_state.hand,
-            hand_size=game_state.hand_size,
+            game_size=game_state.game_size,
             deck_size=len(game_state.deck),
             deck_composition=get_deck_composition(game_state)
         )
@@ -222,5 +222,5 @@ async def get_deck_info(
         "deck_size": len(game_state.deck),
         "deck_composition": get_deck_composition(game_state),
         "discard_pile_size": len(game_state.discard_pile),
-        "hand_size": game_state.hand_size
+        "game_size": game_state.game_size
     }

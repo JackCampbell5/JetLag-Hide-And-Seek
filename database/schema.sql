@@ -27,6 +27,7 @@ CREATE TABLE user_game_state (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     hand JSONB DEFAULT '[]',
+    game_size INTEGER DEFAULT 5,  -- Game difficulty level (3=Small, 4=Medium, 5=Large)
     deck JSONB DEFAULT '[]',
     discard_pile JSONB DEFAULT '[]',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

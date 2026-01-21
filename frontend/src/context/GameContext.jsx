@@ -33,25 +33,25 @@ export const GameProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await gameAPI.getState();
-      const backendHandSize = response.data.hand_size;
-      const localHandSize = gameSize;
+      const backendGameSize = response.data.game_size;
+      const localGameSize = gameSize;
 
-      // If backend hand size differs from local preference, update backend
-      if (backendHandSize !== localHandSize) {
+      // If backend game size differs from local preference, update backend
+      if (backendGameSize !== localGameSize) {
         try {
-          const updateResponse = await gameAPI.updateHandSize(localHandSize);
+          const updateResponse = await gameAPI.updateGameSize(localGameSize);
           setGameState(updateResponse.data);
-          setGameSize(updateResponse.data.hand_size);
+          setGameSize(updateResponse.data.game_size);
         } catch (err) {
-          console.error('Failed to sync hand size:', err);
+          console.error('Failed to sync game size:', err);
           // If update fails, use backend size
           setGameState(response.data);
-          setGameSize(backendHandSize);
-          localStorage.setItem('gameSize', backendHandSize.toString());
+          setGameSize(backendGameSize);
+          localStorage.setItem('gameSize', backendGameSize.toString());
         }
       } else {
         setGameState(response.data);
-        setGameSize(backendHandSize);
+        setGameSize(backendGameSize);
       }
     } catch (error) {
       console.error('Failed to load game state:', error);
@@ -176,12 +176,12 @@ export const GameProvider = ({ children }) => {
     setLoading(true);
     try {
       // Update backend
-      const response = await gameAPI.updateHandSize(newSize);
+      const response = await gameAPI.updateGameSize(newSize);
 
       // Update local state with backend response
       setGameState(response.data);
-      setGameSize(response.data.hand_size);
-      localStorage.setItem('gameSize', response.data.hand_size.toString());
+      setGameSize(response.data.game_size);
+      localStorage.setItem('gameSize', response.data.game_size.toString());
     } catch (error) {
       console.error('Failed to update game size:', error);
       // Revert to old size on error
