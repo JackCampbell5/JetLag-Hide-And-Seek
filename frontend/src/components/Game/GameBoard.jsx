@@ -195,6 +195,8 @@ const GameBoard = () => {
           setCurseData(result.curse_data);
           setShowCurseModal(true);
         }
+        // Note: If this was a "Discard X Draw Y" card, the drawn cards are already
+        // set in GameContext by playCard, so no need to do anything here
 
         setDiscardContext(null);
         setSelectedDiscardPositions([]);
@@ -256,7 +258,8 @@ const GameBoard = () => {
       // Simply remove the card from the hand without any side effects
       const newHand = [...gameState.hand];
       newHand[position] = null;
-      await updateHand(newHand);
+      // Pass false for clearDrawn to preserve drawn cards when manually discarding
+      await updateHand(newHand, [], false);
     } catch (err) {
       setError("Failed to discard card");
     }

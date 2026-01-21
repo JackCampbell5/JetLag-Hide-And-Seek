@@ -79,13 +79,17 @@ export const GameProvider = ({ children }) => {
     }
   };
 
-  const updateHand = async (newHand, positionsToHighlight = []) => {
+  const updateHand = async (newHand, positionsToHighlight = [], clearDrawn = true) => {
     setLoading(true);
     try {
       const response = await gameAPI.updateHand(newHand);
       setGameState(response.data);
-      setDrawnCards([]);
-      setPickCount(0);
+
+      // Only clear drawn cards if explicitly requested (default true for backward compatibility)
+      if (clearDrawn) {
+        setDrawnCards([]);
+        setPickCount(0);
+      }
 
       // Highlight newly added card positions if provided
       if (positionsToHighlight.length > 0) {
