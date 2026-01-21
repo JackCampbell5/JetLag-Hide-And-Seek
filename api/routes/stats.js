@@ -59,4 +59,39 @@ export default async function statsRoutes(fastify) {
       return reply.code(500).send({ error: 'Internal server error' });
     }
   });
+
+  // Reset user progress (hand and statistics)
+  fastify.post('/api/stats/reset', { onRequest: [fastify.authenticate] }, async (request, reply) => {
+    try {
+      const userId = request.user.id;
+
+      // Reset user game state (hand)
+      await prisma.userGameState.updateMany({
+        where: { userId },
+        data: {
+          hand: [null, null, null, null, null],
+          deck: [],
+          discardPile: [],
+        },
+      });
+
+      // Reset user statistics
+      await prisma.userStatistics.updateMany({
+        where: { userId },
+        data: {
+          totalCardsDrawn: 0,
+          totalCardsPlayed: 0,
+          gamesCompleted: 0,
+        },
+      });
+
+      return reply.send({
+        success: true,
+        message: 'User progress has been reset',
+      });
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.code(500).send({ error: 'Internal server error' });
+    }
+  });
 }

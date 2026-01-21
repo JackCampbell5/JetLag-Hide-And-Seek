@@ -42,6 +42,7 @@ export const game = {
 export const stats = {
   getUserStats: () => api.get('/stats/user'),
   getHistory: (limit = 50, offset = 0) => api.get(`/stats/history?limit=${limit}&offset=${offset}`),
+  resetProgress: () => api.post('/stats/reset'),
 };
 
 export default api;

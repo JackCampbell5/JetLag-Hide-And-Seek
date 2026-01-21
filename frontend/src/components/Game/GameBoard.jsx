@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGame } from "../../context/GameContext";
 import { useAuth } from "../../context/AuthContext";
 import { useIsMobile } from "../../hooks/useMediaQuery";
+import { stats } from "../../api/client";
 import Hand from "./Hand";
 import Card from "./Card";
 import CardSelectionModal from "./CardSelectionModal";
 import CardDetailModal from "./CardDetailModal";
 import CurseDisplayModal from "./CurseDisplayModal";
+import ResetConfirmationModal from "./ResetConfirmationModal";
 import GameSizeSelector from "./GameSizeSelector";
 
 const QuestionTypes = {
@@ -49,7 +51,26 @@ const GameBoard = () => {
   const [showCurseModal, setShowCurseModal] = useState(false);
   const [curseData, setCurseData] = useState(null);
   const [curseContext, setCurseContext] = useState(null);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [userStats, setUserStats] = useState({
+    total_cards_drawn: 0,
+    total_cards_played: 0,
+    games_completed: 0,
+  });
   const gameSizeConvert = { 3: "Small", 4: "Medium", 5: "Large" };
+
+  // Fetch user statistics on component mount
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await stats.getUserStats();
+        setUserStats(response.data);
+      } catch (err) {
+        console.error("Failed to fetch user statistics:", err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleDrawCards = async (questionType) => {
     // If cards are already drawn
@@ -77,6 +98,10 @@ const GameBoard = () => {
       setPickCount(result.pick_count);
       setSelectedCards([]);
       setCurrentQuestionType(questionType);
+
+      // Refresh statistics after drawing cards
+      const statsResponse = await stats.getUserStats();
+      setUserStats(statsResponse.data);
     } catch (err) {
       setError("Failed to draw cards");
     }
@@ -176,6 +201,10 @@ const GameBoard = () => {
         setShowDiscardModal(true);
       } else {
         await playCard(position);
+
+        // Refresh statistics after playing card
+        const statsResponse = await stats.getUserStats();
+        setUserStats(statsResponse.data);
       }
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to play card");
@@ -202,6 +231,10 @@ const GameBoard = () => {
         } else {
           // Not a curse, play immediately
           await playCard(discardContext.playedPosition, selectedDiscardPositions);
+
+          // Refresh statistics after playing card
+          const statsResponse = await stats.getUserStats();
+          setUserStats(statsResponse.data);
         }
         // Note: If this was a "Discard X Draw Y" card, the drawn cards are already
         // set in GameContext by playCard, so no need to do anything here
@@ -225,6 +258,11 @@ const GameBoard = () => {
     try {
       if (curseContext) {
         await playCard(curseContext.position, curseContext.discardPositions || null);
+
+        // Refresh statistics after playing curse card
+        const statsResponse = await stats.getUserStats();
+        setUserStats(statsResponse.data);
+
         setShowCurseModal(false);
         setCurseContext(null);
         setCurseData(null);
@@ -295,6 +333,31 @@ const GameBoard = () => {
     }
   };
 
+  const handleResetClick = () => {
+    setShowResetModal(true);
+  };
+
+  const handleCancelReset = () => {
+    setShowResetModal(false);
+  };
+
+  const handleConfirmReset = async () => {
+    try {
+      setError("");
+      await stats.resetProgress();
+
+      // Refresh game state and statistics
+      const statsResponse = await stats.getUserStats();
+      setUserStats(statsResponse.data);
+
+      // Reload the page to reset the game state in the context
+      window.location.reload();
+    } catch (err) {
+      setError("Failed to reset progress");
+      setShowResetModal(false);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div style={styles.container}>
@@ -341,6 +404,12 @@ const GameBoard = () => {
           gameSize={gameSize}
           onClose={handleCancelCurse}
           onConfirm={handleConfirmCurse}
+        />
+
+        <ResetConfirmationModal
+          isOpen={showResetModal}
+          onClose={handleCancelReset}
+          onConfirm={handleConfirmReset}
         />
 
         <div style={{
@@ -477,6 +546,11 @@ const GameBoard = () => {
                 0,
               )}{" "}
           </p>
+          <p>Total Cards Drawn: {userStats.total_cards_drawn}</p>
+          <p>Total Cards Played: {userStats.total_cards_played}</p>
+          <button onClick={handleResetClick} style={styles.resetButton}>
+            Reset Progress
+          </button>
         </div>
       </div>
     </DndProvider>
@@ -619,6 +693,19 @@ const styles = {
     padding: "20px",
     backgroundColor: "#e3f2fd",
     borderRadius: "8px",
+  },
+  resetButton: {
+    marginTop: "15px",
+    padding: "10px 20px",
+    backgroundColor: "#f44336",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    transition: "background-color 0.2s",
+    width: "100%",
   },
 };
 
