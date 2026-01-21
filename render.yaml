@@ -1,0 +1,50 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: jetlag-database
+    env: docker
+    plan: free
+    ipAllowList: []
+
+  # Backend API Service
+  - type: web
+    name: jetlag-backend
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jetlag-database
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /api/health
+
+  # Frontend Service (Static Site)
+  - type: web
+    name: jetlag-frontend
+    env: static
+    plan: free
+    region: oregon
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://jetlag-backend.onrender.com/api/*
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
