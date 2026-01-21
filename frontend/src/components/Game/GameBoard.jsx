@@ -197,6 +197,18 @@ const GameBoard = () => {
     setSelectedCardDetail(null);
   };
 
+  const handleDiscardCard = async (position) => {
+    try {
+      setError('');
+      // Simply remove the card from the hand without any side effects
+      const newHand = [...gameState.hand];
+      newHand[position] = null;
+      await updateHand(newHand);
+    } catch (err) {
+      setError('Failed to discard card');
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div style={styles.container}>
@@ -291,7 +303,7 @@ const GameBoard = () => {
           </div>
         )}
 
-        <Hand hand={gameState.hand} onUpdateHand={updateHand} onPlayCard={handlePlayCard} highlightedPositions={highlightedPositions} gameSize={gameSize} onCardClick={handleCardClick} />
+        <Hand hand={gameState.hand} onUpdateHand={updateHand} onPlayCard={handlePlayCard} onDiscardCard={handleDiscardCard} highlightedPositions={highlightedPositions} gameSize={gameSize} onCardClick={handleCardClick} />
 
         <div style={styles.deckInfo}>
           <h3>Deck Info</h3>

@@ -2,10 +2,10 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import Card from './Card';
 
-const HandSlot = ({ position, card, onDrop, onPlay, isHighlighted = false, gameSize = 5, onCardClick }) => {
+const HandSlot = ({ position, card, onDrop, onPlay, onDiscard, isHighlighted = false, gameSize = 5, onCardClick }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'CARD',
-    drop: (item) => onDrop(item.card, position),
+    drop: (item) => onDrop(item, position),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -20,7 +20,7 @@ const HandSlot = ({ position, card, onDrop, onPlay, isHighlighted = false, gameS
       }}
     >
       {card ? (
-        <Card card={card} gameSize={gameSize} onPlay={() => onPlay(position)} isDraggable={true} isHighlighted={isHighlighted} onCardClick={onCardClick} />
+        <Card card={card} gameSize={gameSize} onPlay={() => onPlay(position)} onDiscard={() => onDiscard(position)} isDraggable={true} isHighlighted={isHighlighted} onCardClick={onCardClick} position={position} />
       ) : (
         <div style={styles.emptySlot}>Empty</div>
       )}
@@ -28,10 +28,31 @@ const HandSlot = ({ position, card, onDrop, onPlay, isHighlighted = false, gameS
   );
 };
 
-const Hand = ({ hand, onUpdateHand, onPlayCard, highlightedPositions = [], gameSize = 5, onCardClick }) => {
-  const handleDrop = (card, position) => {
+const Hand = ({ hand, onUpdateHand, onPlayCard, onDiscardCard, highlightedPositions = [], gameSize = 5, onCardClick }) => {
+  const handleDrop = (item, targetPosition) => {
+    const { card, sourcePosition } = item;
     const newHand = [...hand];
-    newHand[position] = card;
+
+    // If sourcePosition is defined, this is a move within hand
+    if (sourcePosition !== undefined && sourcePosition !== null) {
+      // Swap cards if target position has a card, otherwise just move
+      const targetCard = newHand[targetPosition];
+
+      if (targetCard) {
+        // Swap: put target card in source position
+        newHand[sourcePosition] = targetCard;
+      } else {
+        // Just move: clear source position
+        newHand[sourcePosition] = null;
+      }
+
+      // Place dragged card at target position
+      newHand[targetPosition] = card;
+    } else {
+      // Adding a new card from drawn cards, just place it
+      newHand[targetPosition] = card;
+    }
+
     onUpdateHand(newHand);
   };
 
@@ -47,6 +68,7 @@ const Hand = ({ hand, onUpdateHand, onPlayCard, highlightedPositions = [], gameS
             card={card}
             onDrop={handleDrop}
             onPlay={onPlayCard}
+            onDiscard={onDiscardCard}
             isHighlighted={highlightedPositions.includes(index)}
             gameSize={gameSize}
             onCardClick={onCardClick}

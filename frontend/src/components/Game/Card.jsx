@@ -6,21 +6,23 @@ const Card = ({
   card,
   gameSize = 5,
   onPlay,
+  onDiscard,
   canPlay = true,
   isDraggable = false,
   isHighlighted = false,
   onCardClick,
+  position,
 }) => {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: "CARD",
-      item: { card },
+      item: { card, sourcePosition: position },
       canDrag: isDraggable,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     }),
-    [card, isDraggable],
+    [card, isDraggable, position],
   );
 
   if (!card) return null;
@@ -105,26 +107,32 @@ const Card = ({
           </div>
         )}
       </div>
-      {canPlay && onPlay && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onPlay();
-          }}
-          style={styles.playButton}
-        >
-          Play
-        </button>
-      )}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onPlay();
-        }}
-        style={styles.playButton}
-      >
-        Discard
-      </button>
+      {(canPlay && onPlay) || onDiscard ? (
+        <div style={styles.buttonContainer}>
+          {canPlay && onPlay && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPlay();
+              }}
+              style={styles.actionButton}
+            >
+              Play
+            </button>
+          )}
+          {onDiscard && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDiscard();
+              }}
+              style={{...styles.actionButton, backgroundColor: "rgba(255,100,100,0.5)"}}
+            >
+              Discard
+            </button>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -169,14 +177,20 @@ const styles = {
     fontStyle: "italic",
     opacity: 0.95,
   },
-  playButton: {
-    padding: "5px 10px",
+  buttonContainer: {
+    display: "flex",
+    gap: "5px",
+    justifyContent: "space-between",
+  },
+  actionButton: {
+    flex: 1,
+    padding: "5px 8px",
     backgroundColor: "rgba(255,255,255,0.3)",
     border: "1px solid white",
     borderRadius: "4px",
     color: "white",
     cursor: "pointer",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "bold",
   },
   menuButton: {
