@@ -1,10 +1,19 @@
-import React from 'react';
-import { useDrop } from 'react-dnd';
-import Card from './Card';
+import React from "react";
+import { useDrop } from "react-dnd";
+import Card from "./Card";
 
-const HandSlot = ({ position, card, onDrop, onPlay, onDiscard, isHighlighted = false, gameSize = 5, onCardClick }) => {
+const HandSlot = ({
+  position,
+  card,
+  onDrop,
+  onPlay,
+  onDiscard,
+  isHighlighted = false,
+  gameSize = 5,
+  onCardClick,
+}) => {
   const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'CARD',
+    accept: "CARD",
     drop: (item) => onDrop(item, position),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -16,11 +25,20 @@ const HandSlot = ({ position, card, onDrop, onPlay, onDiscard, isHighlighted = f
       ref={drop}
       style={{
         ...styles.slot,
-        backgroundColor: isOver ? '#e0e0e0' : '#f5f5f5',
+        backgroundColor: isOver ? "#e0e0e0" : "#f5f5f5",
       }}
     >
       {card ? (
-        <Card card={card} gameSize={gameSize} onPlay={() => onPlay(position)} onDiscard={() => onDiscard(position)} isDraggable={true} isHighlighted={isHighlighted} onCardClick={onCardClick} position={position} />
+        <Card
+          card={card}
+          gameSize={gameSize}
+          onPlay={() => onPlay(position)}
+          onDiscard={() => onDiscard(position)}
+          isDraggable={false}
+          isHighlighted={isHighlighted}
+          onCardClick={onCardClick}
+          position={position}
+        />
       ) : (
         <div style={styles.emptySlot}>Empty</div>
       )}
@@ -28,7 +46,15 @@ const HandSlot = ({ position, card, onDrop, onPlay, onDiscard, isHighlighted = f
   );
 };
 
-const Hand = ({ hand, onUpdateHand, onPlayCard, onDiscardCard, highlightedPositions = [], gameSize = 5, onCardClick }) => {
+const Hand = ({
+  hand,
+  onUpdateHand,
+  onPlayCard,
+  onDiscardCard,
+  highlightedPositions = [],
+  gameSize = 5,
+  onCardClick,
+}) => {
   const handleDrop = (item, targetPosition) => {
     const { card, sourcePosition } = item;
     const newHand = [...hand];
@@ -81,32 +107,32 @@ const Hand = ({ hand, onUpdateHand, onPlayCard, onDiscardCard, highlightedPositi
 
 const styles = {
   container: {
-    padding: '20px',
+    padding: "20px",
   },
   title: {
-    textAlign: 'center',
-    marginBottom: '20px',
-    color: '#333',
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
   },
   handContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '10px',
-    flexWrap: 'wrap',
+    display: "flex",
+    justifyContent: "center",
+    gap: "10px",
+    flexWrap: "wrap",
   },
   slot: {
-    width: '140px',
-    minHeight: '180px',
-    border: '2px dashed #ccc',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'background-color 0.2s',
+    width: "140px",
+    minHeight: "180px",
+    border: "2px dashed #ccc",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background-color 0.2s",
   },
   emptySlot: {
-    color: '#999',
-    fontSize: '14px',
+    color: "#999",
+    fontSize: "14px",
   },
 };
 
