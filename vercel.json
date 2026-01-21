@@ -6,6 +6,10 @@
     {
       "source": "/api/:path*",
       "destination": "/api/serverless/[...path]"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
