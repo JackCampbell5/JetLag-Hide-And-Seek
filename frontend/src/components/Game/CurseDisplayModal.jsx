@@ -1,7 +1,10 @@
 import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose }) => {
+  const isMobile = useIsMobile();
+
   if (!isOpen || !curseData) return null;
 
   const allowedDifficulty = getAllowedDifficulty(gameSize);
@@ -60,16 +63,34 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose }) => {
 
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
-          <h1 style={styles.curseName}>{curseData.name}</h1>
+      <div style={{
+        ...styles.modal,
+        ...(isMobile ? styles.modalMobile : {})
+      }} onClick={(e) => e.stopPropagation()}>
+        <div style={{
+          ...styles.header,
+          ...(isMobile ? styles.headerMobile : {})
+        }}>
+          <h1 style={{
+            ...styles.curseName,
+            ...(isMobile ? styles.curseNameMobile : {})
+          }}>{curseData.name}</h1>
         </div>
 
-        <div style={styles.curseTextSection}>
-          <p style={styles.curseText}>{curseText}</p>
+        <div style={{
+          ...styles.curseTextSection,
+          ...(isMobile ? styles.curseTextSectionMobile : {})
+        }}>
+          <p style={{
+            ...styles.curseText,
+            ...(isMobile ? styles.curseTextMobile : {})
+          }}>{curseText}</p>
         </div>
 
-        <div style={styles.castingCostSection}>
+        <div style={{
+          ...styles.castingCostSection,
+          ...(isMobile ? styles.castingCostSectionMobile : {})
+        }}>
           <h3 style={styles.castingCostTitle}>Casting Cost:</h3>
           <div style={styles.costItems}>
             {castingCostItems.map((item, index) => (
@@ -81,12 +102,24 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose }) => {
           </div>
         </div>
 
-        <div style={styles.warningBanner}>
-          <div style={styles.warningIcon}>⚠️</div>
-          <div style={styles.warningText}>SCREENSHOT AND SEND TO SEEKERS</div>
+        <div style={{
+          ...styles.warningBanner,
+          ...(isMobile ? styles.warningBannerMobile : {})
+        }}>
+          <div style={{
+            ...styles.warningIcon,
+            ...(isMobile ? styles.warningIconMobile : {})
+          }}>⚠️</div>
+          <div style={{
+            ...styles.warningText,
+            ...(isMobile ? styles.warningTextMobile : {})
+          }}>SCREENSHOT AND SEND TO SEEKERS</div>
         </div>
 
-        <button onClick={onClose} style={styles.doneButton}>
+        <button onClick={onClose} style={{
+          ...styles.doneButton,
+          ...(isMobile ? styles.doneButtonMobile : {})
+        }}>
           Done
         </button>
       </div>
@@ -118,12 +151,20 @@ const styles = {
     boxShadow: '0 8px 40px rgba(139, 0, 139, 0.6)',
     border: '3px solid #8b008b',
   },
+  modalMobile: {
+    maxWidth: '95vw',
+    maxHeight: '95vh',
+    border: '2px solid #8b008b',
+  },
   header: {
     backgroundColor: '#8b008b',
     padding: '25px',
     borderTopLeftRadius: '16px',
     borderTopRightRadius: '16px',
     textAlign: 'center',
+  },
+  headerMobile: {
+    padding: '20px',
   },
   curseName: {
     fontSize: '32px',
@@ -132,10 +173,17 @@ const styles = {
     margin: 0,
     textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
   },
+  curseNameMobile: {
+    fontSize: '24px',
+  },
   curseTextSection: {
     padding: '30px',
     backgroundColor: '#3d2554',
     minHeight: '150px',
+  },
+  curseTextSectionMobile: {
+    padding: '20px',
+    minHeight: '120px',
   },
   curseText: {
     fontSize: '18px',
@@ -144,11 +192,18 @@ const styles = {
     margin: 0,
     textAlign: 'left',
   },
+  curseTextMobile: {
+    fontSize: '16px',
+    lineHeight: '1.6',
+  },
   castingCostSection: {
     padding: '25px 30px',
     backgroundColor: '#4a2d63',
     borderTop: '2px solid #8b008b',
     borderBottom: '2px solid #8b008b',
+  },
+  castingCostSectionMobile: {
+    padding: '20px',
   },
   castingCostTitle: {
     fontSize: '18px',
@@ -188,14 +243,25 @@ const styles = {
     justifyContent: 'center',
     gap: '15px',
   },
+  warningBannerMobile: {
+    padding: '15px',
+    gap: '10px',
+    flexDirection: 'column',
+  },
   warningIcon: {
     fontSize: '32px',
+  },
+  warningIconMobile: {
+    fontSize: '24px',
   },
   warningText: {
     fontSize: '20px',
     fontWeight: 'bold',
     color: '#000000',
     letterSpacing: '1px',
+  },
+  warningTextMobile: {
+    fontSize: '14px',
   },
   doneButton: {
     width: '100%',
@@ -211,6 +277,10 @@ const styles = {
     transition: 'background-color 0.2s',
     textTransform: 'uppercase',
     letterSpacing: '2px',
+  },
+  doneButtonMobile: {
+    padding: '14px',
+    fontSize: '16px',
   },
 };
 

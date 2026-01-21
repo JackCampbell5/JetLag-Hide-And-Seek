@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from './Card';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CardSelectionModal = ({
   isOpen,
@@ -13,6 +14,8 @@ const CardSelectionModal = ({
   title,
   confirmText
 }) => {
+  const isMobile = useIsMobile();
+
   if (!isOpen) return null;
 
   const handleCardClick = (position) => {
@@ -31,15 +34,27 @@ const CardSelectionModal = ({
 
   return (
     <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <h2 style={styles.title}>
+      <div style={{
+        ...styles.modal,
+        ...(isMobile ? styles.modalMobile : {})
+      }}>
+        <h2 style={{
+          ...styles.title,
+          ...(isMobile ? styles.titleMobile : {})
+        }}>
           {title || `Select ${requiredCount} Card${requiredCount > 1 ? 's' : ''} to Discard`}
         </h2>
-        <p style={styles.subtitle}>
+        <p style={{
+          ...styles.subtitle,
+          ...(isMobile ? styles.subtitleMobile : {})
+        }}>
           Selected: {selectedPositions.length} / {requiredCount}
         </p>
 
-        <div style={styles.cardGrid}>
+        <div style={{
+          ...styles.cardGrid,
+          ...(isMobile ? styles.cardGridMobile : {})
+        }}>
           {hand.map((card, position) => {
             const isPlayed = position === playedPosition;
             const isEmpty = !card;
@@ -75,10 +90,16 @@ const CardSelectionModal = ({
           })}
         </div>
 
-        <div style={styles.buttonContainer}>
+        <div style={{
+          ...styles.buttonContainer,
+          ...(isMobile ? styles.buttonContainerMobile : {})
+        }}>
           <button
             onClick={onCancel}
-            style={styles.cancelButton}
+            style={{
+              ...styles.cancelButton,
+              ...(isMobile ? styles.cancelButtonMobile : {})
+            }}
           >
             Cancel
           </button>
@@ -87,6 +108,7 @@ const CardSelectionModal = ({
             disabled={selectedPositions.length !== requiredCount}
             style={{
               ...styles.confirmButton,
+              ...(isMobile ? styles.confirmButtonMobile : {}),
               opacity: selectedPositions.length !== requiredCount ? 0.5 : 1,
               cursor: selectedPositions.length !== requiredCount ? 'not-allowed' : 'pointer',
             }}
@@ -122,11 +144,19 @@ const styles = {
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
   },
+  modalMobile: {
+    padding: '15px',
+    maxWidth: '95vw',
+    maxHeight: '95vh',
+  },
   title: {
     textAlign: 'center',
     color: '#333',
     marginBottom: '10px',
     fontSize: '24px',
+  },
+  titleMobile: {
+    fontSize: '18px',
   },
   subtitle: {
     textAlign: 'center',
@@ -134,11 +164,19 @@ const styles = {
     marginBottom: '20px',
     fontSize: '16px',
   },
+  subtitleMobile: {
+    fontSize: '14px',
+  },
   cardGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
     gap: '15px',
     marginBottom: '30px',
+  },
+  cardGridMobile: {
+    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+    gap: '10px',
+    marginBottom: '20px',
   },
   cardContainer: {
     position: 'relative',
@@ -196,6 +234,10 @@ const styles = {
     gap: '15px',
     justifyContent: 'center',
   },
+  buttonContainerMobile: {
+    flexDirection: 'column',
+    gap: '10px',
+  },
   cancelButton: {
     padding: '12px 30px',
     backgroundColor: '#757575',
@@ -207,6 +249,11 @@ const styles = {
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
   },
+  cancelButtonMobile: {
+    width: '100%',
+    padding: '10px 20px',
+    fontSize: '14px',
+  },
   confirmButton: {
     padding: '12px 30px',
     backgroundColor: '#4CAF50',
@@ -217,6 +264,11 @@ const styles = {
     fontSize: '16px',
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
+  },
+  confirmButtonMobile: {
+    width: '100%',
+    padding: '10px 20px',
+    fontSize: '14px',
   },
 };
 

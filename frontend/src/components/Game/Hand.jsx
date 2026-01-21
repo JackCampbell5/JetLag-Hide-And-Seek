@@ -1,6 +1,7 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import Card from "./Card";
+import { useIsMobile } from "../../hooks/useMediaQuery";
 
 const HandSlot = ({
   position,
@@ -11,6 +12,7 @@ const HandSlot = ({
   isHighlighted = false,
   gameSize = 5,
   onCardClick,
+  isMobile = false,
 }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "CARD",
@@ -25,6 +27,7 @@ const HandSlot = ({
       ref={drop}
       style={{
         ...styles.slot,
+        ...(isMobile ? styles.slotMobile : {}),
         backgroundColor: isOver ? "#e0e0e0" : "#f5f5f5",
       }}
     >
@@ -40,7 +43,12 @@ const HandSlot = ({
           position={position}
         />
       ) : (
-        <div style={styles.emptySlot}>Empty</div>
+        <div style={{
+          ...styles.emptySlot,
+          ...(isMobile ? styles.emptySlotMobile : {})
+        }}>
+          Empty
+        </div>
       )}
     </div>
   );
@@ -55,6 +63,8 @@ const Hand = ({
   gameSize = 5,
   onCardClick,
 }) => {
+  const isMobile = useIsMobile();
+
   const handleDrop = (item, targetPosition) => {
     const { card, sourcePosition } = item;
     const newHand = [...hand];
@@ -84,9 +94,20 @@ const Hand = ({
 
   // Hand always has 5 positions
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Your Hand (5 positions)</h2>
-      <div style={styles.handContainer}>
+    <div style={{
+      ...styles.container,
+      ...(isMobile ? styles.containerMobile : {})
+    }}>
+      <h2 style={{
+        ...styles.title,
+        ...(isMobile ? styles.titleMobile : {})
+      }}>
+        Your Hand (5 positions)
+      </h2>
+      <div style={{
+        ...styles.handContainer,
+        ...(isMobile ? styles.handContainerMobile : {})
+      }}>
         {hand.map((card, index) => (
           <HandSlot
             key={index}
@@ -98,6 +119,7 @@ const Hand = ({
             isHighlighted={highlightedPositions.includes(index)}
             gameSize={gameSize}
             onCardClick={onCardClick}
+            isMobile={isMobile}
           />
         ))}
       </div>
@@ -109,16 +131,27 @@ const styles = {
   container: {
     padding: "20px",
   },
+  containerMobile: {
+    padding: "10px",
+  },
   title: {
     textAlign: "center",
     marginBottom: "20px",
     color: "#333",
+  },
+  titleMobile: {
+    fontSize: "18px",
+    marginBottom: "15px",
   },
   handContainer: {
     display: "flex",
     justifyContent: "center",
     gap: "10px",
     flexWrap: "wrap",
+  },
+  handContainerMobile: {
+    gap: "5px",
+    justifyContent: "space-evenly",
   },
   slot: {
     width: "140px",
@@ -130,9 +163,16 @@ const styles = {
     justifyContent: "center",
     transition: "background-color 0.2s",
   },
+  slotMobile: {
+    width: "110px",
+    minHeight: "150px",
+  },
   emptySlot: {
     color: "#999",
     fontSize: "14px",
+  },
+  emptySlotMobile: {
+    fontSize: "12px",
   },
 };
 

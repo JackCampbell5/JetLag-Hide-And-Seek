@@ -1,7 +1,10 @@
 import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
+  const isMobile = useIsMobile();
+
   if (!isOpen || !card) return null;
 
   const allowedDifficulty = getAllowedDifficulty(gameSize);
@@ -28,8 +31,15 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
 
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={{ ...styles.cardPreview, backgroundColor }}>
+      <div style={{
+        ...styles.modal,
+        ...(isMobile ? styles.modalMobile : {})
+      }} onClick={(e) => e.stopPropagation()}>
+        <div style={{
+          ...styles.cardPreview,
+          ...(isMobile ? styles.cardPreviewMobile : {}),
+          backgroundColor
+        }}>
           <div style={styles.cardHeader}>
             <strong>{card.name || card.Type}</strong>
           </div>
@@ -44,7 +54,10 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
         </div>
 
         <div style={styles.detailsSection}>
-          <h2 style={styles.title}>{card.name || card.Type}</h2>
+          <h2 style={{
+            ...styles.title,
+            ...(isMobile ? styles.titleMobile : {})
+          }}>{card.name || card.Type}</h2>
           <div style={styles.typeTag}>
             {card.Type}
           </div>
@@ -136,7 +149,10 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
           </div>
         </div>
 
-        <button onClick={onClose} style={styles.closeButton}>
+        <button onClick={onClose} style={{
+          ...styles.closeButton,
+          ...(isMobile ? styles.closeButtonMobile : {})
+        }}>
           Close
         </button>
       </div>
@@ -167,6 +183,11 @@ const styles = {
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
   },
+  modalMobile: {
+    padding: '15px',
+    maxWidth: '95vw',
+    maxHeight: '95vh',
+  },
   cardPreview: {
     width: '150px',
     minHeight: '200px',
@@ -178,6 +199,12 @@ const styles = {
     justifyContent: 'space-between',
     boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
     margin: '0 auto 25px',
+  },
+  cardPreviewMobile: {
+    width: '120px',
+    minHeight: '160px',
+    padding: '12px',
+    marginBottom: '20px',
   },
   cardHeader: {
     fontSize: '16px',
@@ -208,6 +235,9 @@ const styles = {
     marginBottom: '10px',
     textAlign: 'center',
     color: '#333',
+  },
+  titleMobile: {
+    fontSize: '20px',
   },
   typeTag: {
     display: 'inline-block',
@@ -337,6 +367,10 @@ const styles = {
     fontSize: '16px',
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
+  },
+  closeButtonMobile: {
+    padding: '10px',
+    fontSize: '14px',
   },
 };
 

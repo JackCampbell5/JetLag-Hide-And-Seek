@@ -1,6 +1,7 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 import { getAllowedDifficulty } from "../../context/GameContext";
+import { useIsMobile } from "../../hooks/useMediaQuery";
 
 const Card = ({
   card,
@@ -13,6 +14,7 @@ const Card = ({
   onCardClick,
   position,
 }) => {
+  const isMobile = useIsMobile();
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: "CARD",
@@ -82,6 +84,7 @@ const Card = ({
       ref={drag}
       style={{
         ...styles.card,
+        ...(isMobile ? styles.cardMobile : {}),
         backgroundColor,
         opacity: isDragging ? 0.5 : 1,
         cursor: isDraggable ? "move" : "default",
@@ -99,31 +102,53 @@ const Card = ({
             e.stopPropagation();
             onCardClick(card);
           }}
-          style={styles.menuButton}
+          style={{
+            ...styles.menuButton,
+            ...(isMobile ? styles.menuButtonMobile : {})
+          }}
           aria-label="Card menu"
         >
           ⋮
         </button>
       )}
-      <div style={styles.cardHeader}>
+      <div style={{
+        ...styles.cardHeader,
+        ...(isMobile ? styles.cardHeaderMobile : {})
+      }}>
         <strong>{card.name || card.Type}</strong>
       </div>
       <div style={styles.cardBody}>
-        {card.color && <div style={styles.cardColor}>{card.color}</div>}
+        {card.color && (
+          <div style={{
+            ...styles.cardColor,
+            ...(isMobile ? styles.cardColorMobile : {})
+          }}>
+            {card.color}
+          </div>
+        )}
         {difficultyValue > 0 && (
-          <div style={styles.cardValues}>
+          <div style={{
+            ...styles.cardValues,
+            ...(isMobile ? styles.cardValuesMobile : {})
+          }}>
             <span>
               {allowedDifficulty[0]}: {difficultyValue}
             </span>
           </div>
         )}
         {card.Type === "Curse" && card.casting_cost && (
-          <div style={styles.castingCost}>
+          <div style={{
+            ...styles.castingCost,
+            ...(isMobile ? styles.castingCostMobile : {})
+          }}>
             {getCastingCostSummary(card.casting_cost)}
           </div>
         )}
         {card.description && (
-          <div style={styles.cardDescription}>
+          <div style={{
+            ...styles.cardDescription,
+            ...(isMobile ? styles.cardDescriptionMobile : {})
+          }}>
             {getShortDescription(card.description)}
           </div>
         )}
@@ -136,7 +161,10 @@ const Card = ({
                 e.stopPropagation();
                 onPlay();
               }}
-              style={styles.actionButton}
+              style={{
+                ...styles.actionButton,
+                ...(isMobile ? styles.actionButtonMobile : {})
+              }}
             >
               Play
             </button>
@@ -147,7 +175,11 @@ const Card = ({
                 e.stopPropagation();
                 onDiscard();
               }}
-              style={{...styles.actionButton, backgroundColor: "rgba(255,100,100,0.5)"}}
+              style={{
+                ...styles.actionButton,
+                ...(isMobile ? styles.actionButtonMobile : {}),
+                backgroundColor: "rgba(255,100,100,0.5)"
+              }}
             >
               Discard
             </button>
@@ -171,11 +203,21 @@ const styles = {
     boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
     margin: "5px",
   },
+  cardMobile: {
+    width: "100px",
+    minHeight: "140px",
+    padding: "8px",
+    margin: "3px",
+  },
   cardHeader: {
     fontSize: "14px",
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: "10px",
+  },
+  cardHeaderMobile: {
+    fontSize: "12px",
+    marginBottom: "8px",
   },
   cardBody: {
     flex: 1,
@@ -185,11 +227,19 @@ const styles = {
     marginBottom: "10px",
     textAlign: "center",
   },
+  cardColorMobile: {
+    fontSize: "10px",
+    marginBottom: "8px",
+  },
   cardValues: {
     display: "flex",
     flexDirection: "column",
     fontSize: "12px",
     gap: "5px",
+  },
+  cardValuesMobile: {
+    fontSize: "10px",
+    gap: "3px",
   },
   castingCost: {
     fontSize: "10px",
@@ -201,12 +251,22 @@ const styles = {
     textAlign: "center",
     lineHeight: "1.3",
   },
+  castingCostMobile: {
+    fontSize: "8px",
+    marginTop: "6px",
+    padding: "4px",
+  },
   cardDescription: {
     fontSize: "11px",
     marginTop: "8px",
     lineHeight: "1.4",
     fontStyle: "italic",
     opacity: 0.95,
+  },
+  cardDescriptionMobile: {
+    fontSize: "9px",
+    marginTop: "6px",
+    lineHeight: "1.3",
   },
   buttonContainer: {
     display: "flex",
@@ -223,6 +283,10 @@ const styles = {
     cursor: "pointer",
     fontSize: "11px",
     fontWeight: "bold",
+  },
+  actionButtonMobile: {
+    padding: "4px 6px",
+    fontSize: "10px",
   },
   menuButton: {
     position: "absolute",
@@ -244,6 +308,13 @@ const styles = {
     lineHeight: "1",
     transition: "all 0.2s ease",
     zIndex: 10,
+  },
+  menuButtonMobile: {
+    width: "20px",
+    height: "20px",
+    fontSize: "14px",
+    top: "3px",
+    right: "3px",
   },
 };
 

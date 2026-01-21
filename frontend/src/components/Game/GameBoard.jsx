@@ -3,6 +3,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGame } from "../../context/GameContext";
 import { useAuth } from "../../context/AuthContext";
+import { useIsMobile } from "../../hooks/useMediaQuery";
 import Hand from "./Hand";
 import Card from "./Card";
 import CardSelectionModal from "./CardSelectionModal";
@@ -31,6 +32,7 @@ const GameBoard = () => {
     gameSize,
     updateGameSize,
   } = useGame();
+  const isMobile = useIsMobile();
   const [selectedCards, setSelectedCards] = useState([]);
   const [error, setError] = useState("");
   const [pickCount, setPickCount] = useState(0);
@@ -312,16 +314,28 @@ const GameBoard = () => {
           onClose={() => setShowCurseModal(false)}
         />
 
-        <div style={styles.header}>
-          <h1>JetLag Card Game</h1>
-          <div style={styles.headerRight}>
+        <div style={{
+          ...styles.header,
+          ...(isMobile ? styles.headerMobile : {})
+        }}>
+          <h1 style={isMobile ? styles.titleMobile : {}}>JetLag Card Game</h1>
+          <div style={{
+            ...styles.headerRight,
+            ...(isMobile ? styles.headerRightMobile : {})
+          }}>
             <GameSizeSelector
               gameSize={gameSize}
               onGameSizeChange={updateGameSize}
               compact={true}
             />
-            <span style={styles.welcomeText}>Welcome, {user?.username}!</span>
-            <button onClick={logout} style={styles.logoutButton}>
+            <span style={{
+              ...styles.welcomeText,
+              ...(isMobile ? { whiteSpace: 'normal', textAlign: 'center' } : {})
+            }}>Welcome, {user?.username}!</span>
+            <button onClick={logout} style={{
+              ...styles.logoutButton,
+              ...(isMobile ? { width: '100%' } : {})
+            }}>
               Logout
             </button>
           </div>
@@ -330,27 +344,50 @@ const GameBoard = () => {
         {error && <div style={styles.error}>{error}</div>}
 
         <div style={styles.questionTypes}>
-          <h3>Select Question Type:</h3>
-          <div style={styles.buttonGrid}>
-            {Object.entries(QuestionTypes).map(([type, config]) => (
-              <button
-                key={type}
-                onClick={() => handleDrawCards(type)}
-                style={{
-                  ...styles.questionButton,
-                  ...(currentQuestionType === type
-                    ? styles.questionButtonActive
-                    : {}),
-                }}
-              >
-                {type}
-                <br />
-                <small>
-                  Draw {config.draw}, Pick {config.pick}
-                </small>
-              </button>
-            ))}
-          </div>
+          <h3 style={isMobile ? styles.questionTypesHeaderMobile : {}}>
+            Select Question Type:
+          </h3>
+
+          {isMobile ? (
+            // Mobile: Dropdown
+            <select
+              value={currentQuestionType || ''}
+              onChange={(e) => {
+                const type = e.target.value;
+                if (type) handleDrawCards(type);
+              }}
+              style={styles.questionTypeSelect}
+            >
+              <option value="">-- Select Type --</option>
+              {Object.entries(QuestionTypes).map(([type, config]) => (
+                <option key={type} value={type}>
+                  {type} (Draw {config.draw}, Pick {config.pick})
+                </option>
+              ))}
+            </select>
+          ) : (
+            // Desktop: Button Grid
+            <div style={styles.buttonGrid}>
+              {Object.entries(QuestionTypes).map(([type, config]) => (
+                <button
+                  key={type}
+                  onClick={() => handleDrawCards(type)}
+                  style={{
+                    ...styles.questionButton,
+                    ...(currentQuestionType === type
+                      ? styles.questionButtonActive
+                      : {}),
+                  }}
+                >
+                  {type}
+                  <br />
+                  <small>
+                    Draw {config.draw}, Pick {config.pick}
+                  </small>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {drawnCards.length > 0 && (
@@ -431,11 +468,29 @@ const styles = {
     padding: "10px",
     backgroundColor: "#f5f5f5",
     borderRadius: "8px",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+  headerMobile: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "15px",
+  },
+  titleMobile: {
+    fontSize: "20px",
+    textAlign: "center",
+    margin: "0",
   },
   headerRight: {
     display: "flex",
     alignItems: "center",
     gap: "15px",
+    flexWrap: "wrap",
+  },
+  headerRightMobile: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "10px",
   },
   welcomeText: {
     whiteSpace: "nowrap",
@@ -461,6 +516,21 @@ const styles = {
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "8px",
+  },
+  questionTypesHeaderMobile: {
+    fontSize: "16px",
+    marginBottom: "10px",
+  },
+  questionTypeSelect: {
+    width: "100%",
+    padding: "12px",
+    fontSize: "16px",
+    backgroundColor: "#2196F3",
+    color: "white",
+    border: "2px solid #1976D2",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontWeight: "bold",
   },
   buttonGrid: {
     display: "grid",
