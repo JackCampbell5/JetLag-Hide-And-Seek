@@ -12,12 +12,12 @@ import CurseDisplayModal from "./CurseDisplayModal";
 import GameSizeSelector from "./GameSizeSelector";
 
 const QuestionTypes = {
-  Matching: { draw: 3, pick: 1 },
-  Measuring: { draw: 3, pick: 1 },
-  Thermometer: { draw: 2, pick: 1 },
-  Radar: { draw: 2, pick: 1 },
-  Tentacles: { draw: 4, pick: 2 },
-  Photos: { draw: 1, pick: 1 },
+  MATCHING: { draw: 3, pick: 1, label: 'Matching' },
+  MEASURING: { draw: 3, pick: 1, label: 'Measuring' },
+  THERMOMETER: { draw: 2, pick: 1, label: 'Thermometer' },
+  RADAR: { draw: 2, pick: 1, label: 'Radar' },
+  TENTACLES: { draw: 4, pick: 2, label: 'Tentacles' },
+  PHOTOS: { draw: 1, pick: 1, label: 'Photos' },
 };
 
 const GameBoard = () => {
@@ -361,7 +361,7 @@ const GameBoard = () => {
               <option value="">-- Select Type --</option>
               {Object.entries(QuestionTypes).map(([type, config]) => (
                 <option key={type} value={type}>
-                  {type} (Draw {config.draw}, Pick {config.pick})
+                  {config.label} (Draw {config.draw}, Pick {config.pick})
                 </option>
               ))}
             </select>
@@ -379,7 +379,7 @@ const GameBoard = () => {
                       : {}),
                   }}
                 >
-                  {type}
+                  {config.label}
                   <br />
                   <small>
                     Draw {config.draw}, Pick {config.pick}
