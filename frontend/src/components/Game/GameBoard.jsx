@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useGame } from '../../context/GameContext';
-import { useAuth } from '../../context/AuthContext';
-import Hand from './Hand';
-import Card from './Card';
-import CardSelectionModal from './CardSelectionModal';
-import CardDetailModal from './CardDetailModal';
-import GameSizeSelector from './GameSizeSelector';
+import React, { useState } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { useGame } from "../../context/GameContext";
+import { useAuth } from "../../context/AuthContext";
+import Hand from "./Hand";
+import Card from "./Card";
+import CardSelectionModal from "./CardSelectionModal";
+import CardDetailModal from "./CardDetailModal";
+import GameSizeSelector from "./GameSizeSelector";
 
 const QuestionTypes = {
   Matching: { draw: 3, pick: 1 },
@@ -20,9 +20,18 @@ const QuestionTypes = {
 
 const GameBoard = () => {
   const { user, logout } = useAuth();
-  const { gameState, drawnCards, drawCards, updateHand, playCard, highlightedPositions, gameSize, updateGameSize } = useGame();
+  const {
+    gameState,
+    drawnCards,
+    drawCards,
+    updateHand,
+    playCard,
+    highlightedPositions,
+    gameSize,
+    updateGameSize,
+  } = useGame();
   const [selectedCards, setSelectedCards] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [pickCount, setPickCount] = useState(0);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [discardContext, setDiscardContext] = useState(null);
@@ -30,9 +39,11 @@ const GameBoard = () => {
   const [currentQuestionType, setCurrentQuestionType] = useState(null);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateContext, setDuplicateContext] = useState(null);
-  const [selectedDuplicatePosition, setSelectedDuplicatePosition] = useState(null);
+  const [selectedDuplicatePosition, setSelectedDuplicatePosition] =
+    useState(null);
   const [showCardDetail, setShowCardDetail] = useState(false);
   const [selectedCardDetail, setSelectedCardDetail] = useState(null);
+  const gameSizeConvert = { 3: "Small", 4: "Medium", 5: "Large" };
 
   const handleDrawCards = async (questionType) => {
     // If cards are already drawn
@@ -55,13 +66,13 @@ const GameBoard = () => {
 
     // Draw new cards (first draw, expanding, or reducing)
     try {
-      setError('');
+      setError("");
       const result = await drawCards(questionType);
       setPickCount(result.pick_count);
       setSelectedCards([]);
       setCurrentQuestionType(questionType);
     } catch (err) {
-      setError('Failed to draw cards');
+      setError("Failed to draw cards");
     }
   };
 
@@ -85,7 +96,11 @@ const GameBoard = () => {
       let cardIndex = 0;
       const placedPositions = [];
 
-      for (let i = 0; i < newHand.length && cardIndex < selectedCards.length; i++) {
+      for (
+        let i = 0;
+        i < newHand.length && cardIndex < selectedCards.length;
+        i++
+      ) {
         if (!newHand[i]) {
           newHand[i] = selectedCards[cardIndex];
           placedPositions.push(i);
@@ -94,7 +109,7 @@ const GameBoard = () => {
       }
 
       if (cardIndex < selectedCards.length) {
-        setError('Not enough space in hand');
+        setError("Not enough space in hand");
         return;
       }
 
@@ -102,26 +117,29 @@ const GameBoard = () => {
       setSelectedCards([]);
       setPickCount(0);
       setCurrentQuestionType(null);
-      setError('');
+      setError("");
     } catch (err) {
-      setError('Failed to update hand');
+      setError("Failed to update hand");
     }
   };
 
   const handlePlayCard = async (position) => {
     try {
-      setError('');
+      setError("");
       const card = gameState.hand[position];
 
-      if (card && card.name === 'Duplicate') {
+      if (card && card.name === "Duplicate") {
         // Open modal to select a card to duplicate
         setDuplicateContext({
           playedPosition: position,
         });
         setSelectedDuplicatePosition(null);
         setShowDuplicateModal(true);
-      } else if (card && (card.name === 'Discard 1 Draw 2' || card.name === 'Discard 2 Draw 3')) {
-        const discardCount = card.name === 'Discard 1 Draw 2' ? 1 : 2;
+      } else if (
+        card &&
+        (card.name === "Discard 1 Draw 2" || card.name === "Discard 2 Draw 3")
+      ) {
+        const discardCount = card.name === "Discard 1 Draw 2" ? 1 : 2;
 
         // Open modal for card selection
         setDiscardContext({
@@ -134,20 +152,23 @@ const GameBoard = () => {
         await playCard(position);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to play card');
+      setError(err.response?.data?.detail || "Failed to play card");
     }
   };
 
   const handleConfirmDiscard = async () => {
     try {
-      if (discardContext && selectedDiscardPositions.length === discardContext.requiredCount) {
+      if (
+        discardContext &&
+        selectedDiscardPositions.length === discardContext.requiredCount
+      ) {
         await playCard(discardContext.playedPosition, selectedDiscardPositions);
         setShowDiscardModal(false);
         setDiscardContext(null);
         setSelectedDiscardPositions([]);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to play card');
+      setError(err.response?.data?.detail || "Failed to play card");
       setShowDiscardModal(false);
     }
   };
@@ -176,7 +197,7 @@ const GameBoard = () => {
         setSelectedDuplicatePosition(null);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to duplicate card');
+      setError(err.response?.data?.detail || "Failed to duplicate card");
       setShowDuplicateModal(false);
     }
   };
@@ -199,13 +220,13 @@ const GameBoard = () => {
 
   const handleDiscardCard = async (position) => {
     try {
-      setError('');
+      setError("");
       // Simply remove the card from the hand without any side effects
       const newHand = [...gameState.hand];
       newHand[position] = null;
       await updateHand(newHand);
     } catch (err) {
-      setError('Failed to discard card');
+      setError("Failed to discard card");
     }
   };
 
@@ -228,8 +249,14 @@ const GameBoard = () => {
           hand={gameState.hand}
           playedPosition={duplicateContext?.playedPosition}
           requiredCount={1}
-          selectedPositions={selectedDuplicatePosition !== null ? [selectedDuplicatePosition] : []}
-          onSelectPosition={(positions) => setSelectedDuplicatePosition(positions[0] ?? null)}
+          selectedPositions={
+            selectedDuplicatePosition !== null
+              ? [selectedDuplicatePosition]
+              : []
+          }
+          onSelectPosition={(positions) =>
+            setSelectedDuplicatePosition(positions[0] ?? null)
+          }
           onConfirm={handleConfirmDuplicate}
           onCancel={handleCancelDuplicate}
           title="Select a Card to Duplicate"
@@ -246,7 +273,11 @@ const GameBoard = () => {
         <div style={styles.header}>
           <h1>JetLag Card Game</h1>
           <div style={styles.headerRight}>
-            <GameSizeSelector gameSize={gameSize} onGameSizeChange={updateGameSize} compact={true} />
+            <GameSizeSelector
+              gameSize={gameSize}
+              onGameSizeChange={updateGameSize}
+              compact={true}
+            />
             <span style={styles.welcomeText}>Welcome, {user?.username}!</span>
             <button onClick={logout} style={styles.logoutButton}>
               Logout
@@ -265,7 +296,9 @@ const GameBoard = () => {
                 onClick={() => handleDrawCards(type)}
                 style={{
                   ...styles.questionButton,
-                  ...(currentQuestionType === type ? styles.questionButtonActive : {}),
+                  ...(currentQuestionType === type
+                    ? styles.questionButtonActive
+                    : {}),
                 }}
               >
                 {type}
@@ -280,9 +313,7 @@ const GameBoard = () => {
 
         {drawnCards.length > 0 && (
           <div style={styles.drawnCards}>
-            <h3>
-              Drawn Cards (Select {pickCount}):
-            </h3>
+            <h3>Drawn Cards (Select {pickCount}):</h3>
             <div style={styles.cardGrid}>
               {drawnCards.map((card, idx) => (
                 <div
@@ -290,29 +321,54 @@ const GameBoard = () => {
                   onClick={() => handleSelectCard(card)}
                   style={{
                     ...styles.selectableCard,
-                    border: selectedCards.includes(card) ? '3px solid #4CAF50' : '2px solid #ccc',
+                    border: selectedCards.includes(card)
+                      ? "3px solid #4CAF50"
+                      : "2px solid #ccc",
                   }}
                 >
-                  <Card card={card} gameSize={gameSize} canPlay={false} onCardClick={handleCardClick} />
+                  <Card
+                    card={card}
+                    gameSize={gameSize}
+                    canPlay={false}
+                    onCardClick={handleCardClick}
+                  />
                 </div>
               ))}
             </div>
             <button onClick={handleAddToHand} style={styles.addButton}>
-              {pickCount === 0 ? 'Done' : 'Add Selected to Hand'}
+              {pickCount === 0 ? "Done" : "Add Selected to Hand"}
             </button>
           </div>
         )}
 
-        <Hand hand={gameState.hand} onUpdateHand={updateHand} onPlayCard={handlePlayCard} onDiscardCard={handleDiscardCard} highlightedPositions={highlightedPositions} gameSize={gameSize} onCardClick={handleCardClick} />
+        <Hand
+          hand={gameState.hand}
+          onUpdateHand={updateHand}
+          onPlayCard={handlePlayCard}
+          onDiscardCard={handleDiscardCard}
+          highlightedPositions={highlightedPositions}
+          gameSize={gameSize}
+          onCardClick={handleCardClick}
+        />
 
         <div style={styles.deckInfo}>
           <h3>Deck Info</h3>
-          <p>Deck Size: {gameState.deck_size}</p>
-          {Object.entries(gameState.deck_composition).map(([type, count]) => (
-            <p key={type}>
-              {type}: {count}
-            </p>
-          ))}
+          <p>
+            Deck Size:{" "}
+            {gameState.hand.reduce(
+              (count, card) => (card ? count + 1 : count),
+              0,
+            )}{" "}
+          </p>
+          <p>
+            Current Time Bonus:{" "}
+            {gameState.hand
+              ?.filter((card) => card && card.Type === "Time Bonus")
+              .reduce(
+                (sum, card) => sum + (card[gameSizeConvert[gameSize]] ?? 0),
+                0,
+              )}{" "}
+          </p>
         </div>
       </div>
     </DndProvider>
@@ -321,107 +377,107 @@ const GameBoard = () => {
 
 const styles = {
   container: {
-    padding: '20px',
-    maxWidth: '1200px',
-    margin: '0 auto',
+    padding: "20px",
+    maxWidth: "1200px",
+    margin: "0 auto",
   },
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-    padding: '10px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '8px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+    padding: "10px",
+    backgroundColor: "#f5f5f5",
+    borderRadius: "8px",
   },
   headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
   },
   welcomeText: {
-    whiteSpace: 'nowrap',
+    whiteSpace: "nowrap",
   },
   logoutButton: {
-    padding: '8px 16px',
-    backgroundColor: '#f44336',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
+    padding: "8px 16px",
+    backgroundColor: "#f44336",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   error: {
-    backgroundColor: '#f44336',
-    color: 'white',
-    padding: '10px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-    textAlign: 'center',
+    backgroundColor: "#f44336",
+    color: "white",
+    padding: "10px",
+    borderRadius: "4px",
+    marginBottom: "20px",
+    textAlign: "center",
   },
   questionTypes: {
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
+    marginBottom: "30px",
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
   },
   buttonGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '10px',
-    marginTop: '10px',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+    gap: "10px",
+    marginTop: "10px",
   },
   questionButton: {
-    padding: '15px',
-    backgroundColor: '#2196F3',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
+    padding: "15px",
+    backgroundColor: "#2196F3",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
   },
   questionButtonActive: {
-    backgroundColor: '#1976D2',
-    border: '3px solid #4CAF50',
-    boxShadow: '0 0 10px rgba(76, 175, 80, 0.5)',
+    backgroundColor: "#1976D2",
+    border: "3px solid #4CAF50",
+    boxShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
   },
   drawnCards: {
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#fff3cd',
-    borderRadius: '8px',
+    marginBottom: "30px",
+    padding: "20px",
+    backgroundColor: "#fff3cd",
+    borderRadius: "8px",
   },
   cardGrid: {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '10px',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    display: "flex",
+    gap: "10px",
+    marginTop: "10px",
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   selectableCard: {
-    cursor: 'pointer',
-    borderRadius: '8px',
-    transition: 'border 0.2s',
+    cursor: "pointer",
+    borderRadius: "8px",
+    transition: "border 0.2s",
   },
   addButton: {
-    marginTop: '15px',
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    display: 'block',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginTop: "15px",
+    padding: "10px 20px",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   deckInfo: {
-    marginTop: '30px',
-    padding: '20px',
-    backgroundColor: '#e3f2fd',
-    borderRadius: '8px',
+    marginTop: "30px",
+    padding: "20px",
+    backgroundColor: "#e3f2fd",
+    borderRadius: "8px",
   },
 };
 
