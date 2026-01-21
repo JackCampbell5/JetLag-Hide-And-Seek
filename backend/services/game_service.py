@@ -71,13 +71,14 @@ def update_user_hand(db: Session, user: User, new_hand: List[Optional[Dict]]) ->
     return game_state
 
 
-def play_card_from_hand(db: Session, user: User, hand_position: int, discard_positions: Optional[List[int]] = None) -> tuple[UserGameState, Optional[List[Card]], bool, List[int]]:
+def play_card_from_hand(db: Session, user: User, hand_position: int, discard_positions: Optional[List[int]] = None) -> tuple[UserGameState, Optional[List[Card]], bool, List[int], Optional[Dict]]:
     """
     Play a card from hand.
-    Returns: (updated_game_state, drawn_cards, auto_placed, placed_positions)
+    Returns: (updated_game_state, drawn_cards, auto_placed, placed_positions, curse_data)
     - drawn_cards: Cards that were drawn (None if no cards drawn)
     - auto_placed: True if cards were placed, False if user needs to choose placement
     - placed_positions: List of hand positions where cards were placed
+    - curse_data: Curse card data if a curse was played (None otherwise)
     """
     game_state = get_or_create_game_state(db, user)
 
@@ -92,8 +93,44 @@ def play_card_from_hand(db: Session, user: User, hand_position: int, discard_pos
     drawn_cards = None
     auto_placed = True  # Default to True for regular cards
     placed_positions = []
+    curse_data = None
 
-    if card.get("Type") == "Discard 1 Draw 2":
+    if card.get("Type") == "Curse":
+        # Handle curse card
+        casting_cost = card.get("casting_cost", {})
+        discard_count = casting_cost.get("discard", 0)
+
+        if discard_count > 0:
+            # Validate discard positions
+            if not discard_positions or len(discard_positions) != discard_count:
+                raise ValueError(f"Must select {discard_count} card(s) to discard")
+
+            # Check for duplicate positions
+            if len(discard_positions) != len(set(discard_positions)):
+                raise ValueError("Cannot select the same card position multiple times")
+
+            # Validate discard positions
+            for pos in discard_positions:
+                if pos < 0 or pos >= game_state.hand_size or pos == hand_position:
+                    raise ValueError(f"Invalid discard position: {pos}")
+                if not game_state.hand[pos]:
+                    raise ValueError(f"No card at position {pos}")
+
+            # Discard selected cards
+            for pos in discard_positions:
+                game_state.discard_pile.append(game_state.hand[pos])
+                game_state.hand[pos] = None
+
+        # Move curse card to discard pile
+        game_state.discard_pile.append(card)
+        game_state.hand[hand_position] = None
+        flag_modified(game_state, "hand")
+        flag_modified(game_state, "discard_pile")
+
+        # Store curse data to return to frontend
+        curse_data = card
+
+    elif card.get("Type") == "Discard 1 Draw 2":
         if not discard_positions or len(discard_positions) != 1:
             raise ValueError("Must select 1 card to discard")
         drawn_cards, auto_placed, placed_positions = handle_discard_draw(db, game_state, user, hand_position, discard_positions, 1, 2)
@@ -123,7 +160,7 @@ def play_card_from_hand(db: Session, user: User, hand_position: int, discard_pos
         "discard_positions": discard_positions
     })
 
-    return game_state, drawn_cards, auto_placed, placed_positions
+    return game_state, drawn_cards, auto_placed, placed_positions, curse_data
 
 
 def handle_discard_draw(db: Session, game_state: UserGameState, user: User,

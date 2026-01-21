@@ -118,6 +118,11 @@ export const GameProvider = ({ children }) => {
         deck_composition: deckComposition
       }));
 
+      // If curse card was played, return curse data
+      if (response.data.curse_data) {
+        return { curse_data: response.data.curse_data };
+      }
+
       // If special card, return drawn cards
       if (response.data.drawn_cards) {
         const drawnCardsList = response.data.drawn_cards;

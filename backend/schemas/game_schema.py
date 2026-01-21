@@ -18,10 +18,12 @@ class Card(BaseModel):
     color: Optional[str] = None
     name: Optional[str] = None
     cards: int
-    Small: int
-    Medium: int
-    Large: int
+    Small: int | float
+    Medium: int | float
+    Large: int | float
     description: Optional[str] = None
+    casting_cost: Optional[Dict[str, Any]] = None
+    curse_text: Optional[str] = None
 
 
 class GameStateResponse(BaseModel):

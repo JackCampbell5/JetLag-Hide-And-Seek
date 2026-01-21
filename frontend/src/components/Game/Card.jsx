@@ -55,11 +55,27 @@ const Card = ({
     Pink: "#ff69b4",
     Gray: "#808080",
     Special: "#ff00ff",
+    Curse: "#8B008B", // Dark magenta for curse cards
   };
 
-  // Action cards are colored purple
+  // Casting cost summary helper
+  const getCastingCostSummary = (castingCost) => {
+    if (!castingCost) return null;
+    const parts = [];
+    if (castingCost.discard > 0) parts.push(`Discard ${castingCost.discard}`);
+    if (castingCost.photo) parts.push("Photo");
+    if (castingCost.location) parts.push("Location");
+    if (castingCost.die_roll) parts.push("Die Roll");
+    return parts.length > 0 ? `Cost: ${parts.join(", ")}` : "No cost";
+  };
+
+  // Action cards are colored purple, Curse cards are dark magenta
   const backgroundColor =
-    card.Type === "Action" ? "#9370db" : colorMap[card.color] || "#ccc";
+    card.Type === "Action"
+      ? "#9370db"
+      : card.Type === "Curse"
+        ? "#8B008B"
+        : colorMap[card.color] || "#ccc";
 
   return (
     <div
@@ -99,6 +115,11 @@ const Card = ({
             <span>
               {allowedDifficulty[0]}: {difficultyValue}
             </span>
+          </div>
+        )}
+        {card.Type === "Curse" && card.casting_cost && (
+          <div style={styles.castingCost}>
+            {getCastingCostSummary(card.casting_cost)}
           </div>
         )}
         {card.description && (
@@ -169,6 +190,16 @@ const styles = {
     flexDirection: "column",
     fontSize: "12px",
     gap: "5px",
+  },
+  castingCost: {
+    fontSize: "10px",
+    marginTop: "8px",
+    padding: "5px",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    borderRadius: "4px",
+    border: "1px solid rgba(255, 255, 255, 0.4)",
+    textAlign: "center",
+    lineHeight: "1.3",
   },
   cardDescription: {
     fontSize: "11px",

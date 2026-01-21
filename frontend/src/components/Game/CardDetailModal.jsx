@@ -24,7 +24,7 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
     Special: '#ff00ff',
   };
 
-  const backgroundColor = card.Type === 'Action' ? '#9370db' : (colorMap[card.color] || '#ccc');
+  const backgroundColor = card.Type === 'Action' ? '#9370db' : card.Type === 'Curse' ? '#8B008B' : (colorMap[card.color] || '#ccc');
 
   return (
     <div style={styles.overlay} onClick={onClose}>
@@ -53,6 +53,51 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
             <div style={styles.descriptionBox}>
               <h3 style={styles.sectionTitle}>Description</h3>
               <p style={styles.descriptionText}>{card.description}</p>
+            </div>
+          )}
+
+          {card.Type === 'Curse' && card.curse_text && (
+            <div style={styles.curseTextBox}>
+              <h3 style={styles.sectionTitle}>Curse Effect</h3>
+              <p style={styles.curseText}>{card.curse_text}</p>
+            </div>
+          )}
+
+          {card.Type === 'Curse' && card.casting_cost && (
+            <div style={styles.castingCostBox}>
+              <h3 style={styles.sectionTitle}>Casting Cost</h3>
+              <div style={styles.costList}>
+                {card.casting_cost.discard > 0 && (
+                  <div style={styles.costRow}>
+                    <span style={styles.costIcon}>🗑️</span>
+                    <span>Discard {card.casting_cost.discard} card{card.casting_cost.discard > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {card.casting_cost.photo && (
+                  <div style={styles.costRow}>
+                    <span style={styles.costIcon}>📷</span>
+                    <span>Photo: {card.casting_cost.photo}</span>
+                  </div>
+                )}
+                {card.casting_cost.location && (
+                  <div style={styles.costRow}>
+                    <span style={styles.costIcon}>📍</span>
+                    <span>Location: {card.casting_cost.location}</span>
+                  </div>
+                )}
+                {card.casting_cost.die_roll && (
+                  <div style={styles.costRow}>
+                    <span style={styles.costIcon}>🎲</span>
+                    <span>Die Roll: {card.casting_cost.die_roll}</span>
+                  </div>
+                )}
+                {!card.casting_cost.discard && !card.casting_cost.photo && !card.casting_cost.location && !card.casting_cost.die_roll && (
+                  <div style={styles.costRow}>
+                    <span style={styles.costIcon}>✓</span>
+                    <span>No casting cost</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -245,6 +290,41 @@ const styles = {
     fontSize: '14px',
     color: '#333',
     margin: 0,
+  },
+  curseTextBox: {
+    marginBottom: '20px',
+    padding: '15px',
+    backgroundColor: '#f3e5f5',
+    borderRadius: '8px',
+    border: '2px solid #8b008b',
+  },
+  curseText: {
+    fontSize: '14px',
+    lineHeight: '1.6',
+    color: '#333',
+    margin: 0,
+  },
+  castingCostBox: {
+    marginBottom: '20px',
+    padding: '15px',
+    backgroundColor: '#ede7f6',
+    borderRadius: '8px',
+    border: '1px solid #9370db',
+  },
+  costList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  costRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '14px',
+    color: '#333',
+  },
+  costIcon: {
+    fontSize: '20px',
   },
   closeButton: {
     width: '100%',

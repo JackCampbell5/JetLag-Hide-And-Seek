@@ -134,7 +134,7 @@ async def play_card(
     db: Session = Depends(get_db)
 ):
     try:
-        game_state, drawn_cards, auto_placed, placed_positions = play_card_from_hand(
+        game_state, drawn_cards, auto_placed, placed_positions, curse_data = play_card_from_hand(
             db,
             current_user,
             request.hand_position,
@@ -149,6 +149,9 @@ async def play_card(
             "deck_composition": get_deck_composition(game_state),
             "message": "Card played successfully"
         }
+
+        if curse_data:
+            response["curse_data"] = curse_data
 
         if drawn_cards:
             response["drawn_cards"] = [card.dict() for card in drawn_cards]
