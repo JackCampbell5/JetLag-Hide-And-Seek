@@ -1,0 +1,117 @@
+[
+  {
+    "id": 1,
+    "Type": "Time Bonus",
+    "name": "Extra Small Time Bonus",
+    "color": "Red",
+    "cards": 25,
+    "Small": 2,
+    "Medium": 3,
+    "Large": 5,
+    "description": "Adds a small amount of time to your clock. Most common card in the deck. Good for steady progress."
+  },
+  {
+    "id": 2,
+    "Type": "Time Bonus",
+    "name": "Small Time Bonus",
+    "color": "Orange",
+    "cards": 15,
+    "Small": 4,
+    "Medium": 6,
+    "Large": 10,
+    "description": "Adds a decent amount of time to your clock. A reliable mid-value card for building your time bank."
+  },
+  {
+    "id": 3,
+    "Type": "Time Bonus",
+    "name": "Medium Time Bonus",
+    "color": "Yellow",
+    "cards": 10,
+    "Small": 6,
+    "Medium": 9,
+    "Large": 15,
+    "description": "Adds a substantial amount of time to your clock. Less common but worth holding onto for the right moment."
+  },
+  {
+    "id": 4,
+    "Type": "Time Bonus",
+    "name": "Large Time Bonus",
+    "color": "Green",
+    "cards": 3,
+    "Small": 8,
+    "Medium": 12,
+    "Large": 20,
+    "description": "Adds a large amount of time to your clock. Rare and valuable - use strategically for maximum impact."
+  },
+  {
+    "id": 5,
+    "Type": "Time Bonus",
+    "name": "Extra Large Time Bonus",
+    "color": "Blue",
+    "cards": 2,
+    "Small": 12,
+    "Medium": 18,
+    "Large": 30,
+    "description": "Adds the maximum time bonus to your clock. The rarest and most valuable card. Save for critical moments or difficult challenges."
+  },
+  {
+    "id": 6,
+    "Type": "Action",
+    "name": "Randomize",
+    "cards": 4,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Shuffles your current hand into random order. Use when you want to reset card positions or change your hand layout."
+  },
+  {
+    "id": 7,
+    "Type": "Action",
+    "name": "Veto",
+    "cards": 4,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Cancels or rejects the current question or challenge. Powerful defensive card to skip unfavorable situations."
+  },
+  {
+    "id": 8,
+    "Type": "Action",
+    "name": "Duplicate",
+    "cards": 2,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Creates a copy of another card in your hand. Choose wisely to duplicate your best time bonus or save a useful action card."
+  },
+  {
+    "id": 9,
+    "Type": "Action",
+    "name": "Move",
+    "cards": 1,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Allows you to reposition a card to a different slot in your hand. The rarest action card for strategic hand management."
+  },
+  {
+    "id": 10,
+    "Type": "Action",
+    "name": "Discard 1 Draw 2",
+    "cards": 4,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Discard one card from your hand and draw two new cards. Good for refreshing weak cards and expanding options."
+  },
+  {
+    "id": 11,
+    "Type": "Action",
+    "name": "Discard 2 Draw 3",
+    "cards": 4,
+    "Small": 0,
+    "Medium": 0,
+    "Large": 0,
+    "description": "Discard two cards from your hand and draw three new cards. Powerful card cycling for when you need fresh options quickly."
+  }
+]
