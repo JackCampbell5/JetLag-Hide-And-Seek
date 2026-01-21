@@ -2,7 +2,7 @@ import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
-const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose }) => {
+const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) => {
   const isMobile = useIsMobile();
 
   if (!isOpen || !curseData) return null;
@@ -116,12 +116,23 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose }) => {
           }}>SCREENSHOT AND SEND TO SEEKERS</div>
         </div>
 
-        <button onClick={onClose} style={{
-          ...styles.doneButton,
-          ...(isMobile ? styles.doneButtonMobile : {})
+        <div style={{
+          ...styles.buttonContainer,
+          ...(isMobile ? styles.buttonContainerMobile : {})
         }}>
-          Done
-        </button>
+          <button onClick={onClose} style={{
+            ...styles.cancelButton,
+            ...(isMobile ? styles.cancelButtonMobile : {})
+          }}>
+            Cancel
+          </button>
+          <button onClick={onConfirm || onClose} style={{
+            ...styles.playButton,
+            ...(isMobile ? styles.playButtonMobile : {})
+          }}>
+            Play
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -263,13 +274,38 @@ const styles = {
   warningTextMobile: {
     fontSize: '14px',
   },
-  doneButton: {
+  buttonContainer: {
+    display: 'flex',
     width: '100%',
+    gap: '0',
+  },
+  buttonContainerMobile: {
+    gap: '0',
+  },
+  cancelButton: {
+    flex: 1,
+    padding: '18px',
+    backgroundColor: '#555',
+    color: 'white',
+    border: 'none',
+    borderBottomLeftRadius: '16px',
+    cursor: 'pointer',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    transition: 'background-color 0.2s',
+    textTransform: 'uppercase',
+    letterSpacing: '2px',
+  },
+  cancelButtonMobile: {
+    padding: '14px',
+    fontSize: '16px',
+  },
+  playButton: {
+    flex: 1,
     padding: '18px',
     backgroundColor: '#8b008b',
     color: 'white',
     border: 'none',
-    borderBottomLeftRadius: '16px',
     borderBottomRightRadius: '16px',
     cursor: 'pointer',
     fontSize: '18px',
@@ -278,7 +314,7 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '2px',
   },
-  doneButtonMobile: {
+  playButtonMobile: {
     padding: '14px',
     fontSize: '16px',
   },

@@ -48,6 +48,7 @@ const GameBoard = () => {
   const [selectedCardDetail, setSelectedCardDetail] = useState(null);
   const [showCurseModal, setShowCurseModal] = useState(false);
   const [curseData, setCurseData] = useState(null);
+  const [curseContext, setCurseContext] = useState(null);
   const gameSizeConvert = { 3: "Small", 4: "Medium", 5: "Large" };
 
   const handleDrawCards = async (questionType) => {
@@ -148,12 +149,10 @@ const GameBoard = () => {
           setSelectedDiscardPositions([]);
           setShowDiscardModal(true);
         } else {
-          // No discard required - play immediately and show curse modal
-          const result = await playCard(position);
-          if (result && result.curse_data) {
-            setCurseData(result.curse_data);
-            setShowCurseModal(true);
-          }
+          // No discard required - show curse modal first, play on confirmation
+          setCurseData(card);
+          setCurseContext({ position });
+          setShowCurseModal(true);
         }
       } else if (card && card.name === "Duplicate") {
         // Open modal to select a card to duplicate
@@ -189,13 +188,20 @@ const GameBoard = () => {
         discardContext &&
         selectedDiscardPositions.length === discardContext.requiredCount
       ) {
-        const result = await playCard(discardContext.playedPosition, selectedDiscardPositions);
         setShowDiscardModal(false);
 
-        // If this was a curse card, show the curse modal
-        if (discardContext.isCurse && result && result.curse_data) {
-          setCurseData(result.curse_data);
+        // If this was a curse card, show the curse modal before playing
+        if (discardContext.isCurse) {
+          const card = gameState.hand[discardContext.playedPosition];
+          setCurseData(card);
+          setCurseContext({
+            position: discardContext.playedPosition,
+            discardPositions: selectedDiscardPositions
+          });
           setShowCurseModal(true);
+        } else {
+          // Not a curse, play immediately
+          await playCard(discardContext.playedPosition, selectedDiscardPositions);
         }
         // Note: If this was a "Discard X Draw Y" card, the drawn cards are already
         // set in GameContext by playCard, so no need to do anything here
@@ -213,6 +219,28 @@ const GameBoard = () => {
     setShowDiscardModal(false);
     setDiscardContext(null);
     setSelectedDiscardPositions([]);
+  };
+
+  const handleConfirmCurse = async () => {
+    try {
+      if (curseContext) {
+        await playCard(curseContext.position, curseContext.discardPositions || null);
+        setShowCurseModal(false);
+        setCurseContext(null);
+        setCurseData(null);
+        setDiscardContext(null);
+        setSelectedDiscardPositions([]);
+      }
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to play curse card");
+      setShowCurseModal(false);
+    }
+  };
+
+  const handleCancelCurse = () => {
+    setShowCurseModal(false);
+    setCurseContext(null);
+    setCurseData(null);
   };
 
   const handleConfirmDuplicate = async () => {
@@ -311,7 +339,8 @@ const GameBoard = () => {
           isOpen={showCurseModal}
           curseData={curseData}
           gameSize={gameSize}
-          onClose={() => setShowCurseModal(false)}
+          onClose={handleCancelCurse}
+          onConfirm={handleConfirmCurse}
         />
 
         <div style={{
