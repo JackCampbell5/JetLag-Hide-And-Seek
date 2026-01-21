@@ -130,12 +130,12 @@ def play_card_from_hand(db: Session, user: User, hand_position: int, discard_pos
         # Store curse data to return to frontend
         curse_data = card
 
-    elif card.get("Type") == "Discard 1 Draw 2":
+    elif card.get("name") == "Discard 1 Draw 2":
         if not discard_positions or len(discard_positions) != 1:
             raise ValueError("Must select 1 card to discard")
         drawn_cards, auto_placed, placed_positions = handle_discard_draw(db, game_state, user, hand_position, discard_positions, 1, 2)
 
-    elif card.get("Type") == "Discard 2 Draw 3":
+    elif card.get("name") == "Discard 2 Draw 3":
         if not discard_positions or len(discard_positions) != 2:
             raise ValueError("Must select 2 cards to discard")
         drawn_cards, auto_placed, placed_positions = handle_discard_draw(db, game_state, user, hand_position, discard_positions, 2, 3)
