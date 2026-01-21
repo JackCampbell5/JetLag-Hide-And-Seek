@@ -192,7 +192,8 @@ const Card = ({
 
 const styles = {
   card: {
-    width: "120px",
+    width: "100%",
+    height: "100%",
     minHeight: "160px",
     borderRadius: "8px",
     padding: "10px",
@@ -201,13 +202,11 @@ const styles = {
     flexDirection: "column",
     justifyContent: "space-between",
     boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-    margin: "5px",
+    margin: "0",
   },
   cardMobile: {
-    width: "100px",
     minHeight: "140px",
     padding: "8px",
-    margin: "3px",
   },
   cardHeader: {
     fontSize: "14px",
