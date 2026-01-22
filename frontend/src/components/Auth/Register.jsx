@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import { useGame } from '../../context/GameContext';
-import GameSizeSelector from '../Game/GameSizeSelector';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
+import { useGame } from "../../context/GameContext";
+import GameSizeSelector from "../Game/GameSizeSelector";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const { theme } = useTheme();
@@ -21,15 +21,15 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -41,9 +41,11 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
       });
-      navigate('/game');
+      navigate("/game");
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      setError(
+        err.response?.data?.detail || "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -118,18 +120,25 @@ const Register = () => {
 
           <div style={styles.gameSizeContainer}>
             <p style={styles.description(theme)}>
-              Choose which card difficulty level to play with. This determines which values are shown on your cards.
+              Choose which card difficulty level to play with. This determines
+              which values are shown on your cards.
             </p>
-            <GameSizeSelector gameSize={gameSize} onGameSizeChange={updateGameSize} />
+            <GameSizeSelector
+              gameSize={gameSize}
+              onGameSizeChange={updateGameSize}
+            />
           </div>
 
           <button type="submit" disabled={loading} style={styles.button(theme)}>
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? "Creating Account..." : "Register"}
           </button>
         </form>
 
         <p style={styles.link(theme)}>
-          Already have an account? <Link to="/login" style={styles.linkText(theme)}>Login</Link>
+          Already have an account?{" "}
+          <Link to="/login" style={styles.linkText(theme)}>
+            Login
+          </Link>
         </p>
       </div>
     </div>
@@ -138,93 +147,93 @@ const Register = () => {
 
 const styles = {
   container: (theme) => ({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
     backgroundColor: theme.colors.background,
   }),
   card: (theme) => ({
     backgroundColor: theme.colors.backgroundCard,
-    padding: '40px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    width: '100%',
-    maxWidth: '400px',
+    padding: "40px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    width: "100%",
+    maxWidth: "400px",
     border: `1px solid ${theme.colors.border}`,
   }),
   title: (theme) => ({
-    fontSize: '28px',
-    textAlign: 'center',
-    marginBottom: '10px',
+    fontSize: "28px",
+    textAlign: "center",
+    marginBottom: "10px",
     color: theme.colors.text,
   }),
   subtitle: (theme) => ({
-    fontSize: '20px',
-    textAlign: 'center',
-    marginBottom: '30px',
+    fontSize: "20px",
+    textAlign: "center",
+    marginBottom: "30px",
     color: theme.colors.textSecondary,
   }),
   form: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
   inputGroup: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   label: (theme) => ({
-    display: 'block',
-    marginBottom: '5px',
+    display: "block",
+    marginBottom: "5px",
     color: theme.colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   }),
   input: (theme) => ({
-    width: '100%',
-    padding: '10px',
+    width: "100%",
+    padding: "10px",
     border: `1px solid ${theme.colors.inputBorder}`,
-    borderRadius: '4px',
-    fontSize: '16px',
-    boxSizing: 'border-box',
+    borderRadius: "4px",
+    fontSize: "16px",
+    boxSizing: "border-box",
     backgroundColor: theme.colors.input,
     color: theme.colors.text,
   }),
   button: (theme) => ({
-    padding: '12px',
+    padding: "12px",
     backgroundColor: theme.colors.primary,
-    color: theme.colors.white,
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    transition: 'background-color 0.2s ease',
+    color: theme.colors.text,
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    fontWeight: "500",
+    transition: "background-color 0.2s ease",
   }),
   error: (theme) => ({
     backgroundColor: theme.colors.danger,
-    color: theme.colors.white,
-    padding: '10px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-    textAlign: 'center',
+    color: theme.colors.text,
+    padding: "10px",
+    borderRadius: "4px",
+    marginBottom: "20px",
+    textAlign: "center",
   }),
   link: (theme) => ({
-    textAlign: 'center',
-    marginTop: '20px',
+    textAlign: "center",
+    marginTop: "20px",
     color: theme.colors.textSecondary,
   }),
   linkText: (theme) => ({
     color: theme.colors.primary,
-    textDecoration: 'none',
-    fontWeight: '500',
+    textDecoration: "none",
+    fontWeight: "500",
   }),
   gameSizeContainer: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   description: (theme) => ({
-    fontSize: '14px',
+    fontSize: "14px",
     color: theme.colors.textSecondary,
-    marginBottom: '10px',
-    textAlign: 'center',
+    marginBottom: "10px",
+    textAlign: "center",
   }),
 };
 

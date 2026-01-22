@@ -72,7 +72,9 @@ const Card = ({
         backgroundColor,
         opacity: isDragging ? 0.5 : 1,
         cursor: isDraggable ? "move" : "default",
-        border: isHighlighted ? `4px solid ${theme.colors.borderHighlight}` : "none",
+        border: isHighlighted
+          ? `4px solid ${theme.colors.borderHighlight}`
+          : "none",
         boxShadow: isHighlighted
           ? `0 0 20px ${theme.colors.highlight}, 0 2px 5px rgba(0,0,0,0.2)`
           : "0 2px 5px rgba(0,0,0,0.2)",
@@ -191,7 +193,7 @@ const styles = {
     minHeight: "160px",
     borderRadius: "8px",
     padding: "10px",
-    color: theme.colors.white,
+    color: theme.colors.text,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -270,9 +272,9 @@ const styles = {
     flex: 1,
     padding: "5px 8px",
     backgroundColor: theme.colors.overlayLight,
-    border: `1px solid ${theme.colors.white}`,
+    border: `1px solid ${theme.colors.text}`,
     borderRadius: "4px",
-    color: theme.colors.white,
+    color: theme.colors.text,
     cursor: "pointer",
     fontSize: "11px",
     fontWeight: "bold",
@@ -292,7 +294,7 @@ const styles = {
     backgroundColor: theme.colors.overlayLight,
     border: `1px solid ${theme.colors.overlayWhite}`,
     borderRadius: "50%",
-    color: theme.colors.white,
+    color: theme.colors.text,
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",

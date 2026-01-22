@@ -15,12 +15,12 @@ import ResetConfirmationModal from "./ResetConfirmationModal";
 import GameSizeSelector from "./GameSizeSelector";
 
 const QuestionTypes = {
-  MATCHING: { draw: 3, pick: 1, label: 'Matching' },
-  MEASURING: { draw: 3, pick: 1, label: 'Measuring' },
-  THERMOMETER: { draw: 2, pick: 1, label: 'Thermometer' },
-  RADAR: { draw: 2, pick: 1, label: 'Radar' },
-  TENTACLES: { draw: 4, pick: 2, label: 'Tentacles' },
-  PHOTOS: { draw: 1, pick: 1, label: 'Photos' },
+  MATCHING: { draw: 3, pick: 1, label: "Matching" },
+  MEASURING: { draw: 3, pick: 1, label: "Measuring" },
+  THERMOMETER: { draw: 2, pick: 1, label: "Thermometer" },
+  RADAR: { draw: 2, pick: 1, label: "Radar" },
+  TENTACLES: { draw: 4, pick: 2, label: "Tentacles" },
+  PHOTOS: { draw: 1, pick: 1, label: "Photos" },
 };
 
 const GameBoard = () => {
@@ -227,12 +227,15 @@ const GameBoard = () => {
           setCurseData(card);
           setCurseContext({
             position: discardContext.playedPosition,
-            discardPositions: selectedDiscardPositions
+            discardPositions: selectedDiscardPositions,
           });
           setShowCurseModal(true);
         } else {
           // Not a curse, play immediately
-          await playCard(discardContext.playedPosition, selectedDiscardPositions);
+          await playCard(
+            discardContext.playedPosition,
+            selectedDiscardPositions,
+          );
 
           // Refresh statistics after playing card
           const statsResponse = await stats.getUserStats();
@@ -259,7 +262,10 @@ const GameBoard = () => {
   const handleConfirmCurse = async () => {
     try {
       if (curseContext) {
-        await playCard(curseContext.position, curseContext.discardPositions || null);
+        await playCard(
+          curseContext.position,
+          curseContext.discardPositions || null,
+        );
 
         // Refresh statistics after playing curse card
         const statsResponse = await stats.getUserStats();
@@ -414,25 +420,35 @@ const GameBoard = () => {
           onConfirm={handleConfirmReset}
         />
 
-        <div style={{
-          ...styles.header(theme),
-          ...(isMobile ? styles.headerMobile : {})
-        }}>
-          <h1 style={{
-            ...(isMobile ? styles.titleMobile : {}),
-            color: theme.colors.text
-          }}>JetLag Card Game</h1>
-          <div style={{
-            ...styles.headerRight,
-            ...(isMobile ? styles.headerRightMobile : {})
-          }}>
+        <div
+          style={{
+            ...styles.header(theme),
+            ...(isMobile ? styles.headerMobile : {}),
+          }}
+        >
+          <h1
+            style={{
+              ...(isMobile ? styles.titleMobile : {}),
+              color: theme.colors.text,
+            }}
+          >
+            JetLag Card Game
+          </h1>
+          <div
+            style={{
+              ...styles.headerRight,
+              ...(isMobile ? styles.headerRightMobile : {}),
+            }}
+          >
             <button
               onClick={toggleTheme}
               style={{
                 ...styles.themeToggle,
-                ...(isMobile ? { order: -1 } : {})
+                ...(isMobile ? { order: -1 } : {}),
               }}
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              title={
+                isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+              }
             >
               {isDarkMode ? "☀️" : "🌙"}
             </button>
@@ -441,33 +457,42 @@ const GameBoard = () => {
               onGameSizeChange={updateGameSize}
               compact={true}
             />
-            <span style={{
-              ...styles.welcomeText(theme),
-              ...(isMobile ? { whiteSpace: 'normal', textAlign: 'center' } : {})
-            }}>Welcome, {user?.username}!</span>
-            <button onClick={logout} style={{
-              ...styles.logoutButton(theme),
-              ...(isMobile ? { width: '100%' } : {})
-            }}>
+            <span
+              style={{
+                ...styles.welcomeText(theme),
+                ...(isMobile
+                  ? { whiteSpace: "normal", textAlign: "center" }
+                  : {}),
+              }}
+            >
+              Welcome, {user?.username}!
+            </span>
+            <button
+              onClick={logout}
+              style={{
+                ...styles.logoutButton(theme),
+                ...(isMobile ? { width: "100%" } : {}),
+              }}
+            >
               Logout
             </button>
           </div>
         </div>
 
-        {error && <div style={styles.error(theme)}>{error}</div>}
-
         <div style={styles.questionTypes(theme)}>
-          <h3 style={{
-            ...(isMobile ? styles.questionTypesHeaderMobile : {}),
-            color: theme.colors.text
-          }}>
+          <h3
+            style={{
+              ...(isMobile ? styles.questionTypesHeaderMobile : {}),
+              color: theme.colors.text,
+            }}
+          >
             Select Question Type:
           </h3>
 
           {isMobile ? (
             // Mobile: Dropdown
             <select
-              value={currentQuestionType || ''}
+              value={currentQuestionType || ""}
               onChange={(e) => {
                 const type = e.target.value;
                 if (type) handleDrawCards(type);
@@ -508,7 +533,9 @@ const GameBoard = () => {
 
         {drawnCards.length > 0 && (
           <div style={styles.drawnCards(theme)}>
-            <h3 style={{ color: theme.colors.text }}>Drawn Cards (Select {pickCount}):</h3>
+            <h3 style={{ color: theme.colors.text }}>
+              Drawn Cards (Select {pickCount}):
+            </h3>
             <div style={styles.cardGrid}>
               {drawnCards.map((card, idx) => (
                 <div
@@ -535,6 +562,7 @@ const GameBoard = () => {
             </button>
           </div>
         )}
+        {error && <div style={styles.error(theme)}>{error}</div>}
 
         <Hand
           hand={gameState.hand}
@@ -632,7 +660,7 @@ const styles = {
   logoutButton: (theme) => ({
     padding: "8px 16px",
     backgroundColor: theme.colors.danger,
-    color: theme.colors.white,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -640,7 +668,7 @@ const styles = {
   }),
   error: (theme) => ({
     backgroundColor: theme.colors.danger,
-    color: theme.colors.white,
+    color: theme.colors.text,
     padding: "10px",
     borderRadius: "4px",
     marginBottom: "20px",
@@ -662,7 +690,7 @@ const styles = {
     padding: "12px",
     fontSize: "16px",
     backgroundColor: theme.colors.secondary,
-    color: theme.colors.white,
+    color: theme.colors.text,
     border: `2px solid ${theme.colors.secondaryDark}`,
     borderRadius: "4px",
     cursor: "pointer",
@@ -677,7 +705,7 @@ const styles = {
   questionButton: (theme) => ({
     padding: "15px",
     backgroundColor: theme.colors.secondary,
-    color: theme.colors.white,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -713,7 +741,7 @@ const styles = {
     marginTop: "15px",
     padding: "10px 20px",
     backgroundColor: theme.colors.primary,
-    color: theme.colors.white,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -736,7 +764,7 @@ const styles = {
     marginTop: "15px",
     padding: "10px 20px",
     backgroundColor: theme.colors.danger,
-    color: theme.colors.white,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
