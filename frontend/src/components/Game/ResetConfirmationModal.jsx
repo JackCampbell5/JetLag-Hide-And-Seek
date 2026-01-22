@@ -15,11 +15,11 @@ const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
         ...(isMobile ? styles.modalMobile : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
-          ...styles.header,
+          ...styles.header(theme),
           ...(isMobile ? styles.headerMobile : {})
         }}>
           <h2 style={{
-            ...styles.title,
+            ...styles.title(theme),
             ...(isMobile ? styles.titleMobile : {})
           }}>Reset Game Progress?</h2>
         </div>
@@ -42,7 +42,7 @@ const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
             <li>Games completed statistic</li>
           </ul>
           <p style={{
-            ...styles.confirmText,
+            ...styles.confirmText(theme),
             ...(isMobile ? styles.confirmTextMobile : {})
           }}>
             Are you sure you want to continue?
@@ -54,13 +54,13 @@ const ResetConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
           ...(isMobile ? styles.buttonContainerMobile : {})
         }}>
           <button onClick={onClose} style={{
-            ...styles.cancelButton,
+            ...styles.cancelButton(theme),
             ...(isMobile ? styles.cancelButtonMobile : {})
           }}>
             Cancel
           </button>
           <button onClick={onConfirm} style={{
-            ...styles.confirmButton,
+            ...styles.confirmButton(theme),
             ...(isMobile ? styles.confirmButtonMobile : {})
           }}>
             Reset
@@ -93,28 +93,28 @@ const styles = {
     maxHeight: '90vh',
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-    border: '2px solid #f44336',
+    border: `2px solid ${theme.colors.danger}`,
   }),
   modalMobile: {
     maxWidth: '95vw',
     maxHeight: '95vh',
   },
-  header: {
-    backgroundColor: '#f44336',
+  header: (theme) => ({
+    backgroundColor: theme.colors.danger,
     padding: '20px',
     borderTopLeftRadius: '12px',
     borderTopRightRadius: '12px',
     textAlign: 'center',
-  },
+  }),
   headerMobile: {
     padding: '15px',
   },
-  title: {
+  title: (theme) => ({
     fontSize: '24px',
     fontWeight: 'bold',
-    color: 'white',
+    color: theme.colors.white,
     margin: 0,
-  },
+  }),
   titleMobile: {
     fontSize: '20px',
   },
@@ -146,12 +146,12 @@ const styles = {
     lineHeight: '1.8',
     color: theme.colors.textSecondary,
   }),
-  confirmText: {
+  confirmText: (theme) => ({
     fontSize: '16px',
     fontWeight: 'bold',
-    color: '#f44336',
+    color: theme.colors.danger,
     marginTop: '20px',
-  },
+  }),
   confirmTextMobile: {
     fontSize: '14px',
   },
@@ -163,11 +163,11 @@ const styles = {
   buttonContainerMobile: {
     gap: '0',
   },
-  cancelButton: {
+  cancelButton: (theme) => ({
     flex: 1,
     padding: '16px',
-    backgroundColor: '#757575',
-    color: 'white',
+    backgroundColor: theme.colors.buttonSecondary,
+    color: theme.colors.white,
     border: 'none',
     borderBottomLeftRadius: '12px',
     cursor: 'pointer',
@@ -175,16 +175,16 @@ const styles = {
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
     textTransform: 'uppercase',
-  },
+  }),
   cancelButtonMobile: {
     padding: '14px',
     fontSize: '14px',
   },
-  confirmButton: {
+  confirmButton: (theme) => ({
     flex: 1,
     padding: '16px',
-    backgroundColor: '#f44336',
-    color: 'white',
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.white,
     border: 'none',
     borderBottomRightRadius: '12px',
     cursor: 'pointer',
@@ -192,7 +192,7 @@ const styles = {
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
     textTransform: 'uppercase',
-  },
+  }),
   confirmButtonMobile: {
     padding: '14px',
     fontSize: '14px',

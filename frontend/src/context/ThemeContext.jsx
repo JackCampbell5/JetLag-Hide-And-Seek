@@ -10,6 +10,35 @@ export const useTheme = () => {
   return context;
 };
 
+// Utility function to get card background color by card type and color
+export const getCardBackgroundColor = (theme, card) => {
+  if (!card) return theme.colors.backgroundAlt;
+
+  if (card.Type === "Action") {
+    return theme.colors.cardAction;
+  }
+
+  if (card.Type === "Curse") {
+    return theme.colors.cardCurse;
+  }
+
+  // Map card color string to theme color
+  const colorMap = {
+    Red: theme.colors.cardRed,
+    Orange: theme.colors.cardOrange,
+    Yellow: theme.colors.cardYellow,
+    Blue: theme.colors.cardBlue,
+    Green: theme.colors.cardGreen,
+    Purple: theme.colors.cardPurple,
+    Pink: theme.colors.cardPink,
+    Gray: theme.colors.cardGray,
+    Special: theme.colors.cardSpecial,
+    Curse: theme.colors.cardCurse,
+  };
+
+  return colorMap[card.color] || theme.colors.backgroundAlt;
+};
+
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage first
@@ -67,12 +96,14 @@ export const ThemeProvider = ({ children }) => {
       // Border colors
       border: isDarkMode ? "#444444" : "#dddddd",
       borderLight: isDarkMode ? "#333333" : "#e0e0e0",
+      borderHighlight: "#FFD700",
 
       // Button colors
       primary: "#4CAF50",
       primaryHover: "#45a049",
       secondary: "#2196F3",
       secondaryHover: "#0b7dda",
+      secondaryDark: "#1976D2",
       danger: "#f44336",
       dangerHover: "#da190b",
 
@@ -85,6 +116,7 @@ export const ThemeProvider = ({ children }) => {
       // Special colors
       curse: isDarkMode ? "#2d1a2d" : "#f3e5f5",
       curseText: isDarkMode ? "#d19fd1" : "#8B008B",
+      highlight: "rgba(255, 215, 0, 0.8)",
 
       // Header
       header: isDarkMode ? "#2d2d2d" : "#f5f5f5",
@@ -99,7 +131,7 @@ export const ThemeProvider = ({ children }) => {
       inputFocus: isDarkMode ? "#666666" : "#4CAF50",
 
       // Card colors (kept consistent for game mechanics)
-      cardRed: "#ff4444",
+      cardRed: isDarkMode ? "#a40000ff" : "#ff9e9eff",
       cardOrange: "#ff8c00",
       cardYellow: "#ffd700",
       cardBlue: "#4169e1",
@@ -109,6 +141,20 @@ export const ThemeProvider = ({ children }) => {
       cardGray: "#808080",
       cardSpecial: "#ff00ff",
       cardCurse: "#8B008B",
+      cardAction: "#9370db",
+
+      // Semi-transparent overlays
+      overlayLight: "rgba(255, 255, 255, 0.3)",
+      overlayDark: "rgba(0, 0, 0, 0.3)",
+      overlayBorder: "rgba(255, 255, 255, 0.4)",
+      overlayWhite: "rgba(255, 255, 255, 0.5)",
+
+      // Common UI colors
+      white: isDarkMode ? "#ffffff" : "#2e2e2eff",
+      borderActive: "#4CAF50",
+      borderDefault: "#ccc",
+      borderCard: "rgba(255, 255, 255, 0.5)",
+      buttonDanger: "rgba(255, 100, 100, 0.5)",
     },
     isDarkMode,
   };

@@ -446,7 +446,7 @@ const GameBoard = () => {
               ...(isMobile ? { whiteSpace: 'normal', textAlign: 'center' } : {})
             }}>Welcome, {user?.username}!</span>
             <button onClick={logout} style={{
-              ...styles.logoutButton,
+              ...styles.logoutButton(theme),
               ...(isMobile ? { width: '100%' } : {})
             }}>
               Logout
@@ -454,7 +454,7 @@ const GameBoard = () => {
           </div>
         </div>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && <div style={styles.error(theme)}>{error}</div>}
 
         <div style={styles.questionTypes(theme)}>
           <h3 style={{
@@ -472,7 +472,7 @@ const GameBoard = () => {
                 const type = e.target.value;
                 if (type) handleDrawCards(type);
               }}
-              style={styles.questionTypeSelect}
+              style={styles.questionTypeSelect(theme)}
             >
               <option value="">-- Select Type --</option>
               {Object.entries(QuestionTypes).map(([type, config]) => (
@@ -489,9 +489,9 @@ const GameBoard = () => {
                   key={type}
                   onClick={() => handleDrawCards(type)}
                   style={{
-                    ...styles.questionButton,
+                    ...styles.questionButton(theme),
                     ...(currentQuestionType === type
-                      ? styles.questionButtonActive
+                      ? styles.questionButtonActive(theme)
                       : {}),
                   }}
                 >
@@ -515,10 +515,10 @@ const GameBoard = () => {
                   key={idx}
                   onClick={() => handleSelectCard(card)}
                   style={{
-                    ...styles.selectableCard,
+                    ...styles.selectableCard(theme),
                     border: selectedCards.includes(card)
-                      ? "3px solid #4CAF50"
-                      : "2px solid #ccc",
+                      ? `3px solid ${theme.colors.borderActive}`
+                      : `2px solid ${theme.colors.borderDefault}`,
                   }}
                 >
                   <Card
@@ -530,7 +530,7 @@ const GameBoard = () => {
                 </div>
               ))}
             </div>
-            <button onClick={handleAddToHand} style={styles.addButton}>
+            <button onClick={handleAddToHand} style={styles.addButton(theme)}>
               {pickCount === 0 ? "Done" : "Add Selected to Hand"}
             </button>
           </div>
@@ -566,7 +566,7 @@ const GameBoard = () => {
           </p>
           <p>Total Cards Drawn: {userStats.total_cards_drawn}</p>
           <p>Total Cards Played: {userStats.total_cards_played}</p>
-          <button onClick={handleResetClick} style={styles.resetButton}>
+          <button onClick={handleResetClick} style={styles.resetButton(theme)}>
             Reset Progress
           </button>
         </div>
@@ -623,28 +623,29 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "18px",
-    transition: "transform 0.2s",
+    transition: "all 0.2s ease",
   },
   welcomeText: (theme) => ({
     whiteSpace: "nowrap",
     color: theme.colors.text,
   }),
-  logoutButton: {
+  logoutButton: (theme) => ({
     padding: "8px 16px",
-    backgroundColor: "#f44336",
-    color: "white",
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.white,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-  },
-  error: {
-    backgroundColor: "#f44336",
-    color: "white",
+    transition: "background-color 0.2s ease",
+  }),
+  error: (theme) => ({
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.white,
     padding: "10px",
     borderRadius: "4px",
     marginBottom: "20px",
     textAlign: "center",
-  },
+  }),
   questionTypes: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
@@ -656,38 +657,39 @@ const styles = {
     fontSize: "16px",
     marginBottom: "10px",
   },
-  questionTypeSelect: {
+  questionTypeSelect: (theme) => ({
     width: "100%",
     padding: "12px",
     fontSize: "16px",
-    backgroundColor: "#2196F3",
-    color: "white",
-    border: "2px solid #1976D2",
+    backgroundColor: theme.colors.secondary,
+    color: theme.colors.white,
+    border: `2px solid ${theme.colors.secondaryDark}`,
     borderRadius: "4px",
     cursor: "pointer",
     fontWeight: "bold",
-  },
+  }),
   buttonGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
     gap: "10px",
     marginTop: "10px",
   },
-  questionButton: {
+  questionButton: (theme) => ({
     padding: "15px",
-    backgroundColor: "#2196F3",
-    color: "white",
+    backgroundColor: theme.colors.secondary,
+    color: theme.colors.white,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "bold",
-  },
-  questionButtonActive: {
-    backgroundColor: "#1976D2",
-    border: "3px solid #4CAF50",
-    boxShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
-  },
+    transition: "all 0.2s ease",
+  }),
+  questionButtonActive: (theme) => ({
+    backgroundColor: theme.colors.secondaryDark,
+    border: `3px solid ${theme.colors.borderActive}`,
+    boxShadow: `0 0 10px ${theme.colors.highlight}`,
+  }),
   drawnCards: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
@@ -702,16 +704,16 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "center",
   },
-  selectableCard: {
+  selectableCard: (theme) => ({
     cursor: "pointer",
     borderRadius: "8px",
-    transition: "border 0.2s",
-  },
-  addButton: {
+    transition: "border 0.2s ease",
+  }),
+  addButton: (theme) => ({
     marginTop: "15px",
     padding: "10px 20px",
-    backgroundColor: "#4CAF50",
-    color: "white",
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.white,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -720,7 +722,8 @@ const styles = {
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-  },
+    transition: "background-color 0.2s ease",
+  }),
   deckInfo: (theme) => ({
     marginTop: "30px",
     padding: "20px",
@@ -729,19 +732,19 @@ const styles = {
     border: `1px solid ${theme.colors.border}`,
     color: theme.colors.text,
   }),
-  resetButton: {
+  resetButton: (theme) => ({
     marginTop: "15px",
     padding: "10px 20px",
-    backgroundColor: "#f44336",
-    color: "white",
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.white,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "bold",
-    transition: "background-color 0.2s",
+    transition: "background-color 0.2s ease",
     width: "100%",
-  },
+  }),
 };
 
 export default GameBoard;

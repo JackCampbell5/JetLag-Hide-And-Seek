@@ -1,3 +1,7 @@
+/* ========================================
+   Global Reset & Base Styles
+   ======================================== */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -14,8 +18,6 @@ body {
     Arial,
     sans-serif;
   line-height: 1.5;
-  /* color: #333; */
-  background-color: #f5f5f5;
   margin: 0;
   padding: 0;
   transition:
@@ -23,23 +25,92 @@ body {
     color 0.3s ease;
 }
 
-body.dark-mode {
-  /* color: #e0e0e0; */
-  background-color: #1a1a1a;
-}
-
 #root {
   min-height: 100vh;
 }
 
-a {
-  color: #4caf50;
-  text-decoration: none;
+/* ========================================
+   Common Component Patterns
+   ======================================== */
+
+/* Card/Box Base Style */
+.card-base {
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-a:hover {
-  text-decoration: underline;
+/* Button Base Styles */
+.button-base {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.button-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.button-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.button-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+/* Input Base Styles */
+.input-base {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+/* Modal Pattern */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   Animations
+   ======================================== */
 
 @keyframes pulse {
   0%,
@@ -51,7 +122,10 @@ a:hover {
   }
 }
 
-/* Touch-friendly button sizes for mobile */
+/* ========================================
+   Responsive - Touch Targets
+   ======================================== */
+
 @media (max-width: 767px) {
   button {
     min-height: 44px;

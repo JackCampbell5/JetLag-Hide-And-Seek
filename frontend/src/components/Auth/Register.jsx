@@ -59,7 +59,7 @@ const Register = () => {
         <h1 style={styles.title(theme)}>JetLag Card Game</h1>
         <h2 style={styles.subtitle(theme)}>Register</h2>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && <div style={styles.error(theme)}>{error}</div>}
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
@@ -123,13 +123,13 @@ const Register = () => {
             <GameSizeSelector gameSize={gameSize} onGameSizeChange={updateGameSize} />
           </div>
 
-          <button type="submit" disabled={loading} style={styles.button}>
+          <button type="submit" disabled={loading} style={styles.button(theme)}>
             {loading ? 'Creating Account...' : 'Register'}
           </button>
         </form>
 
         <p style={styles.link(theme)}>
-          Already have an account? <Link to="/login" style={styles.linkText}>Login</Link>
+          Already have an account? <Link to="/login" style={styles.linkText(theme)}>Login</Link>
         </p>
       </div>
     </div>
@@ -188,34 +188,35 @@ const styles = {
     backgroundColor: theme.colors.input,
     color: theme.colors.text,
   }),
-  button: {
+  button: (theme) => ({
     padding: '12px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.white,
     border: 'none',
     borderRadius: '4px',
     fontSize: '16px',
     cursor: 'pointer',
     fontWeight: '500',
-  },
-  error: {
-    backgroundColor: '#f44336',
-    color: 'white',
+    transition: 'background-color 0.2s ease',
+  }),
+  error: (theme) => ({
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.white,
     padding: '10px',
     borderRadius: '4px',
     marginBottom: '20px',
     textAlign: 'center',
-  },
+  }),
   link: (theme) => ({
     textAlign: 'center',
     marginTop: '20px',
     color: theme.colors.textSecondary,
   }),
-  linkText: {
-    color: '#4CAF50',
+  linkText: (theme) => ({
+    color: theme.colors.primary,
     textDecoration: 'none',
     fontWeight: '500',
-  },
+  }),
   gameSizeContainer: {
     marginBottom: '20px',
   },

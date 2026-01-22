@@ -67,45 +67,45 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) 
     <div style={styles.overlay(theme)} onClick={onClose}>
       <div style={{
         ...styles.modal(theme),
-        ...(isMobile ? styles.modalMobile : {})
+        ...(isMobile ? styles.modalMobile(theme) : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
-          ...styles.header,
+          ...styles.header(theme),
           ...(isMobile ? styles.headerMobile : {})
         }}>
           <h1 style={{
-            ...styles.curseName,
+            ...styles.curseName(theme),
             ...(isMobile ? styles.curseNameMobile : {})
           }}>{curseData.name}</h1>
         </div>
 
         <div style={{
-          ...styles.curseTextSection,
+          ...styles.curseTextSection(theme),
           ...(isMobile ? styles.curseTextSectionMobile : {})
         }}>
           <p style={{
-            ...styles.curseText,
+            ...styles.curseText(theme),
             ...(isMobile ? styles.curseTextMobile : {})
           }}>{curseText}</p>
         </div>
 
         <div style={{
-          ...styles.castingCostSection,
+          ...styles.castingCostSection(theme),
           ...(isMobile ? styles.castingCostSectionMobile : {})
         }}>
-          <h3 style={styles.castingCostTitle}>Casting Cost:</h3>
+          <h3 style={styles.castingCostTitle(theme)}>Casting Cost:</h3>
           <div style={styles.costItems}>
             {castingCostItems.map((item, index) => (
-              <div key={index} style={styles.costItem}>
+              <div key={index} style={styles.costItem(theme)}>
                 <span style={styles.costIcon}>{item.icon}</span>
-                <span style={styles.costText}>{item.text}</span>
+                <span style={styles.costText(theme)}>{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div style={{
-          ...styles.warningBanner,
+          ...styles.warningBanner(theme),
           ...(isMobile ? styles.warningBannerMobile : {})
         }}>
           <div style={{
@@ -113,7 +113,7 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) 
             ...(isMobile ? styles.warningIconMobile : {})
           }}>⚠️</div>
           <div style={{
-            ...styles.warningText,
+            ...styles.warningText(theme),
             ...(isMobile ? styles.warningTextMobile : {})
           }}>SCREENSHOT AND SEND TO SEEKERS</div>
         </div>
@@ -123,13 +123,13 @@ const CurseDisplayModal = ({ isOpen, curseData, gameSize, onClose, onConfirm }) 
           ...(isMobile ? styles.buttonContainerMobile : {})
         }}>
           <button onClick={onClose} style={{
-            ...styles.cancelButton,
+            ...styles.cancelButton(theme),
             ...(isMobile ? styles.cancelButtonMobile : {})
           }}>
             Cancel
           </button>
           <button onClick={onConfirm || onClose} style={{
-            ...styles.playButton,
+            ...styles.playButton(theme),
             ...(isMobile ? styles.playButtonMobile : {})
           }}>
             Play
@@ -147,14 +147,14 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: theme.colors.modalOverlay,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
   }),
   modal: (theme) => ({
-    backgroundColor: theme.isDarkMode ? '#2a1a3d' : '#3d2554',
+    backgroundColor: theme.colors.curseModal,
     borderRadius: '16px',
     padding: '0',
     maxWidth: '700px',
@@ -162,100 +162,100 @@ const styles = {
     maxHeight: '90vh',
     overflowY: 'auto',
     boxShadow: '0 8px 40px rgba(139, 0, 139, 0.6)',
-    border: '3px solid #8b008b',
+    border: `3px solid ${theme.colors.cursePurple}`,
   }),
-  modalMobile: {
+  modalMobile: (theme) => ({
     maxWidth: '95vw',
     maxHeight: '95vh',
-    border: '2px solid #8b008b',
-  },
-  header: {
-    backgroundColor: '#8b008b',
+    border: `2px solid ${theme.colors.cursePurple}`,
+  }),
+  header: (theme) => ({
+    backgroundColor: theme.colors.cursePurple,
     padding: '25px',
     borderTopLeftRadius: '16px',
     borderTopRightRadius: '16px',
     textAlign: 'center',
-  },
+  }),
   headerMobile: {
     padding: '20px',
   },
-  curseName: {
+  curseName: (theme) => ({
     fontSize: '32px',
     fontWeight: 'bold',
-    color: 'white',
+    color: theme.colors.white,
     margin: 0,
     textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-  },
+  }),
   curseNameMobile: {
     fontSize: '24px',
   },
-  curseTextSection: {
+  curseTextSection: (theme) => ({
     padding: '30px',
-    backgroundColor: '#3d2554',
+    backgroundColor: theme.colors.curseTextBg,
     minHeight: '150px',
-  },
+  }),
   curseTextSectionMobile: {
     padding: '20px',
     minHeight: '120px',
   },
-  curseText: {
+  curseText: (theme) => ({
     fontSize: '18px',
     lineHeight: '1.8',
-    color: '#ffffff',
+    color: theme.colors.white,
     margin: 0,
     textAlign: 'left',
-  },
+  }),
   curseTextMobile: {
     fontSize: '16px',
     lineHeight: '1.6',
   },
-  castingCostSection: {
+  castingCostSection: (theme) => ({
     padding: '25px 30px',
-    backgroundColor: '#4a2d63',
-    borderTop: '2px solid #8b008b',
-    borderBottom: '2px solid #8b008b',
-  },
+    backgroundColor: theme.colors.curseCostBg,
+    borderTop: `2px solid ${theme.colors.cursePurple}`,
+    borderBottom: `2px solid ${theme.colors.cursePurple}`,
+  }),
   castingCostSectionMobile: {
     padding: '20px',
   },
-  castingCostTitle: {
+  castingCostTitle: (theme) => ({
     fontSize: '18px',
     fontWeight: 'bold',
-    color: '#dda0dd',
+    color: theme.colors.cursePlum,
     marginBottom: '15px',
     marginTop: 0,
-  },
+  }),
   costItems: {
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
   },
-  costItem: {
+  costItem: (theme) => ({
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
     padding: '10px 15px',
-    backgroundColor: '#5a3d73',
+    backgroundColor: theme.colors.curseItemBg,
     borderRadius: '8px',
-    border: '1px solid #8b008b',
-  },
+    border: `1px solid ${theme.colors.cursePurple}`,
+  }),
   costIcon: {
     fontSize: '24px',
     flexShrink: 0,
   },
-  costText: {
+  costText: (theme) => ({
     fontSize: '16px',
-    color: '#ffffff',
-  },
-  warningBanner: {
-    backgroundColor: '#ffd700',
+    color: theme.colors.white,
+  }),
+  warningBanner: (theme) => ({
+    backgroundColor: theme.colors.warningYellow,
     padding: '20px',
     textAlign: 'center',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '15px',
-  },
+  }),
   warningBannerMobile: {
     padding: '15px',
     gap: '10px',
@@ -267,12 +267,12 @@ const styles = {
   warningIconMobile: {
     fontSize: '24px',
   },
-  warningText: {
+  warningText: (theme) => ({
     fontSize: '20px',
     fontWeight: 'bold',
-    color: '#000000',
+    color: theme.colors.black,
     letterSpacing: '1px',
-  },
+  }),
   warningTextMobile: {
     fontSize: '14px',
   },
@@ -284,11 +284,11 @@ const styles = {
   buttonContainerMobile: {
     gap: '0',
   },
-  cancelButton: {
+  cancelButton: (theme) => ({
     flex: 1,
     padding: '18px',
-    backgroundColor: '#555',
-    color: 'white',
+    backgroundColor: theme.colors.buttonSecondary,
+    color: theme.colors.white,
     border: 'none',
     borderBottomLeftRadius: '16px',
     cursor: 'pointer',
@@ -297,16 +297,16 @@ const styles = {
     transition: 'background-color 0.2s',
     textTransform: 'uppercase',
     letterSpacing: '2px',
-  },
+  }),
   cancelButtonMobile: {
     padding: '14px',
     fontSize: '16px',
   },
-  playButton: {
+  playButton: (theme) => ({
     flex: 1,
     padding: '18px',
-    backgroundColor: '#8b008b',
-    color: 'white',
+    backgroundColor: theme.colors.cursePurple,
+    color: theme.colors.white,
     border: 'none',
     borderBottomRightRadius: '16px',
     cursor: 'pointer',
@@ -315,7 +315,7 @@ const styles = {
     transition: 'background-color 0.2s',
     textTransform: 'uppercase',
     letterSpacing: '2px',
-  },
+  }),
   playButtonMobile: {
     padding: '14px',
     fontSize: '16px',

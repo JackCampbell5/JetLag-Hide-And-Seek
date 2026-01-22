@@ -1,6 +1,6 @@
 import React from 'react';
 import { getAllowedDifficulty } from '../../context/GameContext';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme, getCardBackgroundColor } from '../../context/ThemeContext';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 
 const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
@@ -17,19 +17,7 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
   };
   const difficultyValue = getDifficultyValue();
 
-  const colorMap = {
-    Red: '#ff4444',
-    Orange: '#ff8c00',
-    Yellow: '#ffd700',
-    Blue: '#4169e1',
-    Green: '#32cd32',
-    Purple: '#9370db',
-    Pink: '#ff69b4',
-    Gray: '#808080',
-    Special: '#ff00ff',
-  };
-
-  const backgroundColor = card.Type === 'Action' ? '#9370db' : card.Type === 'Curse' ? '#8B008B' : (colorMap[card.color] || '#ccc');
+  const backgroundColor = getCardBackgroundColor(theme, card);
 
   return (
     <div style={styles.overlay(theme)} onClick={onClose}>
@@ -38,7 +26,7 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
         ...(isMobile ? styles.modalMobile : {})
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
-          ...styles.cardPreview,
+          ...styles.cardPreview(theme),
           ...(isMobile ? styles.cardPreviewMobile : {}),
           backgroundColor
         }}>
@@ -122,15 +110,15 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
               <div style={styles.valueGrid}>
                 <div style={styles.valueItem(theme)}>
                   <span style={styles.valueLabel(theme)}>Small:</span>
-                  <span style={styles.valueNumber}>{card.Small} min</span>
+                  <span style={styles.valueNumber(theme)}>{card.Small} min</span>
                 </div>
                 <div style={styles.valueItem(theme)}>
                   <span style={styles.valueLabel(theme)}>Medium:</span>
-                  <span style={styles.valueNumber}>{card.Medium} min</span>
+                  <span style={styles.valueNumber(theme)}>{card.Medium} min</span>
                 </div>
                 <div style={styles.valueItem(theme)}>
                   <span style={styles.valueLabel(theme)}>Large:</span>
-                  <span style={styles.valueNumber}>{card.Large} min</span>
+                  <span style={styles.valueNumber(theme)}>{card.Large} min</span>
                 </div>
               </div>
               <div style={styles.currentValue(theme)}>
@@ -152,7 +140,7 @@ const CardDetailModal = ({ isOpen, card, gameSize, onClose }) => {
         </div>
 
         <button onClick={onClose} style={{
-          ...styles.closeButton,
+          ...styles.closeButton(theme),
           ...(isMobile ? styles.closeButtonMobile : {})
         }}>
           Close
@@ -191,18 +179,18 @@ const styles = {
     maxWidth: '95vw',
     maxHeight: '95vh',
   },
-  cardPreview: {
+  cardPreview: (theme) => ({
     width: '150px',
     minHeight: '200px',
     borderRadius: '8px',
     padding: '15px',
-    color: 'white',
+    color: theme.colors.white,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
     margin: '0 auto 25px',
-  },
+  }),
   cardPreviewMobile: {
     width: '120px',
     minHeight: '160px',
@@ -301,15 +289,15 @@ const styles = {
     color: theme.colors.textSecondary,
     marginBottom: '5px',
   }),
-  valueNumber: {
+  valueNumber: (theme) => ({
     fontSize: '18px',
     fontWeight: 'bold',
-    color: '#2196F3',
-  },
+    color: theme.colors.secondary,
+  }),
   currentValue: (theme) => ({
     textAlign: 'center',
     fontSize: '14px',
-    color: '#1976D2',
+    color: theme.colors.secondaryDark,
     padding: '10px',
     backgroundColor: theme.colors.backgroundCard,
     borderRadius: '6px',
@@ -362,18 +350,18 @@ const styles = {
   costIcon: {
     fontSize: '20px',
   },
-  closeButton: {
+  closeButton: (theme) => ({
     width: '100%',
     padding: '12px',
-    backgroundColor: '#2196F3',
-    color: 'white',
+    backgroundColor: theme.colors.secondary,
+    color: theme.colors.white,
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
-    transition: 'background-color 0.2s',
-  },
+    transition: 'background-color 0.2s ease',
+  }),
   closeButtonMobile: {
     padding: '10px',
     fontSize: '14px',

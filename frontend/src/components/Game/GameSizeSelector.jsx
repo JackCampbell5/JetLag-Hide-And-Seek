@@ -39,7 +39,7 @@ const GameSizeSelector = ({ gameSize, onGameSizeChange, compact = false }) => {
             onClick={() => onGameSizeChange(size.value)}
             style={{
               ...styles.sizeButton(theme),
-              ...(gameSize === size.value ? styles.sizeButtonActive : {}),
+              ...(gameSize === size.value ? styles.sizeButtonActive(theme) : {}),
             }}
             title={size.description}
           >
@@ -83,12 +83,12 @@ const styles = {
     minWidth: '50px',
     transition: 'all 0.2s',
   }),
-  sizeButtonActive: {
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: '2px solid #388E3C',
+  sizeButtonActive: (theme) => ({
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.white,
+    border: `2px solid ${theme.colors.primaryDark}`,
     transform: 'scale(1.05)',
-  },
+  }),
   description: (theme) => ({
     marginTop: '10px',
     fontSize: '14px',
