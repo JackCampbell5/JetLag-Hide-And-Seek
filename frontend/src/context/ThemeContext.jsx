@@ -131,8 +131,8 @@ export const ThemeProvider = ({ children }) => {
 
       // Card colors (kept consistent for game mechanics)
       cardRed: isDarkMode ? "#a40000ff" : "#ff9e9eff",
-      cardOrange: isDarkMode ? "#643700ff" : "#ffd6a3ff",
-      cardYellow: isDarkMode ? "#756300ff" : "#fff1a4ff",
+      cardOrange: isDarkMode ? "#613f00ff" : "#ffd6a3ff",
+      cardYellow: isDarkMode ? "#525400ff" : "#fff1a4ff",
       cardBlue: isDarkMode ? "#002593ff" : "#8aa8ffff",
       cardGreen: isDarkMode ? "#006900ff" : "#abffabff",
       cardPurple: isDarkMode ? "#2f008cff" : "#c7abffff",
@@ -156,7 +156,14 @@ export const ThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme, isDarkMode, toggleTheme }}>
-      {children}
+      <div
+        style={{
+          backgroundColor: theme.colors.backgroundAlt,
+          color: theme.colors.text,
+        }}
+      >
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };
