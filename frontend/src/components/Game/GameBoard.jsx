@@ -576,25 +576,38 @@ const GameBoard = () => {
         />
 
         <div style={styles.deckInfo(theme)}>
-          <h3 style={{ color: theme.colors.text }}>Deck Info</h3>
+          <h2 style={{ color: theme.colors.text }}>Deck Info</h2>
           <p>
-            Deck Size:{" "}
+            <b>Deck Size:</b>{" "}
             {gameState.hand.reduce(
               (count, card) => (card ? count + 1 : count),
               0,
-            )}{" "}
+            )}
+            {gameState.hand.reduce(
+              (count, card) => (card ? count + 1 : count),
+              0,
+            ) == 1
+              ? " Card"
+              : " Cards"}
           </p>
           <p>
-            Current Time Bonus:{" "}
+            <b>Current Time Bonus:</b>{" "}
             {gameState.hand
               ?.filter((card) => card && card.Type === "Time Bonus")
               .reduce(
                 (sum, card) => sum + (card[gameSizeConvert[gameSize]] ?? 0),
                 0,
-              )}{" "}
+              )}
+            {" Minutes"}
           </p>
-          <p>Total Cards Drawn: {userStats.total_cards_drawn}</p>
-          <p>Total Cards Played: {userStats.total_cards_played}</p>
+          <p>
+            <b>Total Drawn:</b> {userStats.total_cards_drawn}{" "}
+            {userStats.total_cards_drawn == 1 ? "Card" : "Cards"}
+          </p>
+          <p>
+            <b>Total Played:</b> {userStats.total_cards_played}{" "}
+            {userStats.total_cards_played == 1 ? "Card" : "Cards"}
+          </p>
           <button onClick={handleResetClick} style={styles.resetButton(theme)}>
             Reset Progress
           </button>

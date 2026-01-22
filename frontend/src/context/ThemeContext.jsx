@@ -99,7 +99,7 @@ export const ThemeProvider = ({ children }) => {
       // Button colors
       primary: "#4CAF50",
       primaryHover: "#45a049",
-      secondary: "#2196F3",
+      secondary: isDarkMode ? "#003e70ff" : "#addaffff",
       secondaryHover: "#0b7dda",
       secondaryDark: "#1976D2",
       danger: isDarkMode ? "#922119ff" : "#ff968fff",
@@ -133,8 +133,8 @@ export const ThemeProvider = ({ children }) => {
       cardRed: isDarkMode ? "#a40000ff" : "#ff9e9eff",
       cardOrange: isDarkMode ? "#613f00ff" : "#ffd6a3ff",
       cardYellow: isDarkMode ? "#525400ff" : "#fff1a4ff",
-      cardBlue: isDarkMode ? "#002593ff" : "#8aa8ffff",
       cardGreen: isDarkMode ? "#006900ff" : "#abffabff",
+      cardBlue: isDarkMode ? "#002593ff" : "#8aa8ffff",
       cardPurple: isDarkMode ? "#2f008cff" : "#c7abffff",
       cardPink: isDarkMode ? "#78003cff" : "#ffb4daff",
       cardGray: isDarkMode ? "#474747ff" : "#bababaff",

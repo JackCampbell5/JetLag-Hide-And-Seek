@@ -189,7 +189,7 @@ const styles = {
   cancelButton: (theme) => ({
     flex: 1,
     padding: "16px",
-    backgroundColor: theme.colors.buttonSecondary,
+    backgroundColor: theme.colors.cardGreen,
     color: theme.colors.text,
     border: "none",
     borderBottomLeftRadius: "12px",
