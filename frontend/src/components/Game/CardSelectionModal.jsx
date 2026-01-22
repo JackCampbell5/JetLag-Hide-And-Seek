@@ -1,6 +1,7 @@
-import React from 'react';
-import Card from './Card';
-import { useIsMobile } from '../../hooks/useMediaQuery';
+import React from "react";
+import Card from "./Card";
+import { useTheme } from "../../context/ThemeContext";
+import { useIsMobile } from "../../hooks/useMediaQuery";
 
 const CardSelectionModal = ({
   isOpen,
@@ -12,8 +13,9 @@ const CardSelectionModal = ({
   onConfirm,
   onCancel,
   title,
-  confirmText
+  confirmText,
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   if (!isOpen) return null;
@@ -26,35 +28,44 @@ const CardSelectionModal = ({
 
     // Toggle selection
     if (selectedPositions.includes(position)) {
-      onSelectPosition(selectedPositions.filter(pos => pos !== position));
+      onSelectPosition(selectedPositions.filter((pos) => pos !== position));
     } else if (selectedPositions.length < requiredCount) {
       onSelectPosition([...selectedPositions, position]);
     }
   };
 
   return (
-    <div style={styles.overlay}>
-      <div style={{
-        ...styles.modal,
-        ...(isMobile ? styles.modalMobile : {})
-      }}>
-        <h2 style={{
-          ...styles.title,
-          ...(isMobile ? styles.titleMobile : {})
-        }}>
-          {title || `Select ${requiredCount} Card${requiredCount > 1 ? 's' : ''} to Discard`}
+    <div style={styles.overlay(theme)}>
+      <div
+        style={{
+          ...styles.modal(theme),
+          ...(isMobile ? styles.modalMobile : {}),
+        }}
+      >
+        <h2
+          style={{
+            ...styles.title(theme),
+            ...(isMobile ? styles.titleMobile : {}),
+          }}
+        >
+          {title ||
+            `Select ${requiredCount} Card${requiredCount > 1 ? "s" : ""} to Discard`}
         </h2>
-        <p style={{
-          ...styles.subtitle,
-          ...(isMobile ? styles.subtitleMobile : {})
-        }}>
+        <p
+          style={{
+            ...styles.subtitle(theme),
+            ...(isMobile ? styles.subtitleMobile : {}),
+          }}
+        >
           Selected: {selectedPositions.length} / {requiredCount}
         </p>
 
-        <div style={{
-          ...styles.cardGrid,
-          ...(isMobile ? styles.cardGridMobile : {})
-        }}>
+        <div
+          style={{
+            ...styles.cardGrid,
+            ...(isMobile ? styles.cardGridMobile : {}),
+          }}
+        >
           {hand.map((card, position) => {
             const isPlayed = position === playedPosition;
             const isEmpty = !card;
@@ -66,39 +77,47 @@ const CardSelectionModal = ({
                 key={position}
                 onClick={() => handleCardClick(position)}
                 style={{
-                  ...styles.cardContainer,
-                  cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  ...styles.cardContainer(theme),
+                  cursor: isDisabled ? "not-allowed" : "pointer",
                   opacity: isDisabled ? 0.4 : 1,
                   border: isSelected
-                    ? '4px solid #4CAF50'
+                    ? `4px solid ${theme.colors.borderActive}`
                     : isPlayed
-                    ? '4px solid #f44336'
-                    : '2px solid #ccc',
-                  transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+                      ? `4px solid ${theme.colors.danger}`
+                      : `2px solid ${theme.colors.border}`,
+                  transform: isSelected ? "scale(1.05)" : "scale(1)",
                 }}
               >
-                <div style={styles.positionLabel}>Position {position}</div>
+                <div style={styles.positionLabel(theme)}>
+                  Position {position}
+                </div>
                 {card ? (
                   <Card card={card} canPlay={false} />
                 ) : (
-                  <div style={styles.emptyCard}>Empty</div>
+                  <div style={styles.emptyCard(theme)}>Empty</div>
                 )}
-                {isPlayed && <div style={styles.badge}>Playing This</div>}
-                {isSelected && <div style={styles.selectedBadge}>Selected</div>}
+                {isPlayed && (
+                  <div style={styles.badge(theme)}>Playing This</div>
+                )}
+                {isSelected && (
+                  <div style={styles.selectedBadge(theme)}>Selected</div>
+                )}
               </div>
             );
           })}
         </div>
 
-        <div style={{
-          ...styles.buttonContainer,
-          ...(isMobile ? styles.buttonContainerMobile : {})
-        }}>
+        <div
+          style={{
+            ...styles.buttonContainer,
+            ...(isMobile ? styles.buttonContainerMobile : {}),
+          }}
+        >
           <button
             onClick={onCancel}
             style={{
-              ...styles.cancelButton,
-              ...(isMobile ? styles.cancelButtonMobile : {})
+              ...styles.cancelButton(theme),
+              ...(isMobile ? styles.cancelButtonMobile : {}),
             }}
           >
             Cancel
@@ -107,13 +126,16 @@ const CardSelectionModal = ({
             onClick={onConfirm}
             disabled={selectedPositions.length !== requiredCount}
             style={{
-              ...styles.confirmButton,
+              ...styles.confirmButton(theme),
               ...(isMobile ? styles.confirmButtonMobile : {}),
               opacity: selectedPositions.length !== requiredCount ? 0.5 : 1,
-              cursor: selectedPositions.length !== requiredCount ? 'not-allowed' : 'pointer',
+              cursor:
+                selectedPositions.length !== requiredCount
+                  ? "not-allowed"
+                  : "pointer",
             }}
           >
-            {confirmText || 'Confirm Discard'}
+            {confirmText || "Confirm Discard"}
           </button>
         </div>
       </div>
@@ -122,153 +144,154 @@ const CardSelectionModal = ({
 };
 
 const styles = {
-  overlay: {
-    position: 'fixed',
+  overlay: (theme) => ({
+    position: "fixed",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: theme.colors.modalOverlay,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    padding: '30px',
-    maxWidth: '900px',
-    width: '90%',
-    maxHeight: '90vh',
-    overflowY: 'auto',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-  },
+  }),
+  modal: (theme) => ({
+    backgroundColor: theme.colors.modalBackground,
+    borderRadius: "12px",
+    padding: "30px",
+    maxWidth: "900px",
+    width: "90%",
+    maxHeight: "90vh",
+    overflowY: "auto",
+    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+    border: `1px solid ${theme.colors.border}`,
+  }),
   modalMobile: {
-    padding: '15px',
-    maxWidth: '95vw',
-    maxHeight: '95vh',
+    padding: "15px",
+    maxWidth: "95vw",
+    maxHeight: "95vh",
   },
-  title: {
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: '10px',
-    fontSize: '24px',
-  },
+  title: (theme) => ({
+    textAlign: "center",
+    color: theme.colors.text,
+    marginBottom: "10px",
+    fontSize: "24px",
+  }),
   titleMobile: {
-    fontSize: '18px',
+    fontSize: "18px",
   },
-  subtitle: {
-    textAlign: 'center',
-    color: '#666',
-    marginBottom: '20px',
-    fontSize: '16px',
-  },
+  subtitle: (theme) => ({
+    textAlign: "center",
+    color: theme.colors.textSecondary,
+    marginBottom: "20px",
+    fontSize: "16px",
+  }),
   subtitleMobile: {
-    fontSize: '14px',
+    fontSize: "14px",
   },
   cardGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-    gap: '15px',
-    marginBottom: '30px',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+    gap: "15px",
+    marginBottom: "30px",
   },
   cardGridMobile: {
-    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
-    gap: '10px',
-    marginBottom: '20px',
+    gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+    gap: "10px",
+    marginBottom: "20px",
   },
-  cardContainer: {
-    position: 'relative',
-    borderRadius: '8px',
-    padding: '10px',
-    transition: 'all 0.2s ease',
-    backgroundColor: '#f9f9f9',
-  },
-  positionLabel: {
-    position: 'absolute',
-    top: '5px',
-    left: '5px',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    color: 'white',
-    padding: '2px 6px',
-    borderRadius: '4px',
-    fontSize: '10px',
-    fontWeight: 'bold',
+  cardContainer: (theme) => ({
+    position: "relative",
+    borderRadius: "8px",
+    padding: "10px",
+    transition: "all 0.2s ease",
+    backgroundColor: theme.colors.backgroundAlt,
+  }),
+  positionLabel: (theme) => ({
+    position: "absolute",
+    top: "5px",
+    left: "5px",
+    backgroundColor: theme.colors.overlayDark,
+    color: theme.colors.text,
+    padding: "2px 6px",
+    borderRadius: "4px",
+    fontSize: "10px",
+    fontWeight: "bold",
     zIndex: 10,
-  },
-  emptyCard: {
-    height: '180px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#999',
-    fontSize: '14px',
-  },
-  badge: {
-    position: 'absolute',
-    bottom: '10px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#f44336',
-    color: 'white',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    fontWeight: 'bold',
-  },
-  selectedBadge: {
-    position: 'absolute',
-    bottom: '10px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    fontWeight: 'bold',
-  },
+  }),
+  emptyCard: (theme) => ({
+    height: "180px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: theme.colors.textMuted,
+    fontSize: "14px",
+  }),
+  badge: (theme) => ({
+    position: "absolute",
+    bottom: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.text,
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "11px",
+    fontWeight: "bold",
+  }),
+  selectedBadge: (theme) => ({
+    position: "absolute",
+    bottom: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: theme.colors.borderActive,
+    color: theme.colors.text,
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "11px",
+    fontWeight: "bold",
+  }),
   buttonContainer: {
-    display: 'flex',
-    gap: '15px',
-    justifyContent: 'center',
+    display: "flex",
+    gap: "15px",
+    justifyContent: "center",
   },
   buttonContainerMobile: {
-    flexDirection: 'column',
-    gap: '10px',
+    flexDirection: "column",
+    gap: "10px",
   },
-  cancelButton: {
-    padding: '12px 30px',
-    backgroundColor: '#757575',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    transition: 'background-color 0.2s',
-  },
+  cancelButton: (theme) => ({
+    padding: "12px 30px",
+    backgroundColor: theme.colors.cardGray,
+    color: theme.colors.text,
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.2s ease",
+  }),
   cancelButtonMobile: {
-    width: '100%',
-    padding: '10px 20px',
-    fontSize: '14px',
+    width: "100%",
+    padding: "10px 20px",
+    fontSize: "14px",
   },
-  confirmButton: {
-    padding: '12px 30px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    transition: 'background-color 0.2s',
-  },
+  confirmButton: (theme) => ({
+    padding: "12px 30px",
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.text,
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.2s ease",
+  }),
   confirmButtonMobile: {
-    width: '100%',
-    padding: '10px 20px',
-    fontSize: '14px',
+    width: "100%",
+    padding: "10px 20px",
+    fontSize: "14px",
   },
 };
 

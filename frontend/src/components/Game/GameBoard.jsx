@@ -3,6 +3,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGame } from "../../context/GameContext";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import { useIsMobile } from "../../hooks/useMediaQuery";
 import { stats } from "../../api/client";
 import Hand from "./Hand";
@@ -14,12 +15,12 @@ import ResetConfirmationModal from "./ResetConfirmationModal";
 import GameSizeSelector from "./GameSizeSelector";
 
 const QuestionTypes = {
-  MATCHING: { draw: 3, pick: 1, label: 'Matching' },
-  MEASURING: { draw: 3, pick: 1, label: 'Measuring' },
-  THERMOMETER: { draw: 2, pick: 1, label: 'Thermometer' },
-  RADAR: { draw: 2, pick: 1, label: 'Radar' },
-  TENTACLES: { draw: 4, pick: 2, label: 'Tentacles' },
-  PHOTOS: { draw: 1, pick: 1, label: 'Photos' },
+  MATCHING: { draw: 3, pick: 1, label: "Matching" },
+  MEASURING: { draw: 3, pick: 1, label: "Measuring" },
+  THERMOMETER: { draw: 2, pick: 1, label: "Thermometer" },
+  RADAR: { draw: 2, pick: 1, label: "Radar" },
+  TENTACLES: { draw: 4, pick: 2, label: "Tentacles" },
+  PHOTOS: { draw: 1, pick: 1, label: "Photos" },
 };
 
 const GameBoard = () => {
@@ -34,6 +35,7 @@ const GameBoard = () => {
     gameSize,
     updateGameSize,
   } = useGame();
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [selectedCards, setSelectedCards] = useState([]);
   const [error, setError] = useState("");
@@ -57,6 +59,7 @@ const GameBoard = () => {
     total_cards_played: 0,
     games_completed: 0,
   });
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const gameSizeConvert = { 3: "Small", 4: "Medium", 5: "Large" };
 
   // Fetch user statistics on component mount
@@ -225,12 +228,15 @@ const GameBoard = () => {
           setCurseData(card);
           setCurseContext({
             position: discardContext.playedPosition,
-            discardPositions: selectedDiscardPositions
+            discardPositions: selectedDiscardPositions,
           });
           setShowCurseModal(true);
         } else {
           // Not a curse, play immediately
-          await playCard(discardContext.playedPosition, selectedDiscardPositions);
+          await playCard(
+            discardContext.playedPosition,
+            selectedDiscardPositions,
+          );
 
           // Refresh statistics after playing card
           const statsResponse = await stats.getUserStats();
@@ -257,7 +263,10 @@ const GameBoard = () => {
   const handleConfirmCurse = async () => {
     try {
       if (curseContext) {
-        await playCard(curseContext.position, curseContext.discardPositions || null);
+        await playCard(
+          curseContext.position,
+          curseContext.discardPositions || null,
+        );
 
         // Refresh statistics after playing curse card
         const statsResponse = await stats.getUserStats();
@@ -360,7 +369,7 @@ const GameBoard = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div style={styles.container}>
+      <div style={styles.container(theme)}>
         <CardSelectionModal
           isOpen={showDiscardModal}
           hand={gameState.hand}
@@ -412,49 +421,84 @@ const GameBoard = () => {
           onConfirm={handleConfirmReset}
         />
 
-        <div style={{
-          ...styles.header,
-          ...(isMobile ? styles.headerMobile : {})
-        }}>
-          <h1 style={isMobile ? styles.titleMobile : {}}>JetLag Card Game</h1>
-          <div style={{
-            ...styles.headerRight,
-            ...(isMobile ? styles.headerRightMobile : {})
-          }}>
+        <div
+          style={{
+            ...styles.header(theme),
+            ...(isMobile ? styles.headerMobile : {}),
+          }}
+        >
+          <h1
+            style={{
+              ...(isMobile ? styles.titleMobile : {}),
+              color: theme.colors.text,
+            }}
+          >
+            JetLag (Unofficial) Card Game
+          </h1>
+          <div
+            style={{
+              ...styles.headerRight,
+              ...(isMobile ? styles.headerRightMobile : {}),
+            }}
+          >
+            <button
+              onClick={toggleTheme}
+              style={{
+                ...styles.themeToggle,
+                ...(isMobile ? { order: -1 } : {}),
+              }}
+              title={
+                isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+              }
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
             <GameSizeSelector
               gameSize={gameSize}
               onGameSizeChange={updateGameSize}
               compact={true}
             />
-            <span style={{
-              ...styles.welcomeText,
-              ...(isMobile ? { whiteSpace: 'normal', textAlign: 'center' } : {})
-            }}>Welcome, {user?.username}!</span>
-            <button onClick={logout} style={{
-              ...styles.logoutButton,
-              ...(isMobile ? { width: '100%' } : {})
-            }}>
+            <span
+              style={{
+                ...styles.welcomeText(theme),
+                ...(isMobile
+                  ? { whiteSpace: "normal", textAlign: "center" }
+                  : {}),
+              }}
+            >
+              Welcome, {user?.username}!
+            </span>
+            <button
+              onClick={logout}
+              style={{
+                ...styles.logoutButton(theme),
+                ...(isMobile ? { width: "100%" } : {}),
+              }}
+            >
               Logout
             </button>
           </div>
         </div>
 
-        {error && <div style={styles.error}>{error}</div>}
-
-        <div style={styles.questionTypes}>
-          <h3 style={isMobile ? styles.questionTypesHeaderMobile : {}}>
+        <div style={styles.questionTypes(theme)}>
+          <h3
+            style={{
+              ...(isMobile ? styles.questionTypesHeaderMobile : {}),
+              color: theme.colors.text,
+            }}
+          >
             Select Question Type:
           </h3>
 
           {isMobile ? (
             // Mobile: Dropdown
             <select
-              value={currentQuestionType || ''}
+              value={currentQuestionType || ""}
               onChange={(e) => {
                 const type = e.target.value;
                 if (type) handleDrawCards(type);
               }}
-              style={styles.questionTypeSelect}
+              style={styles.questionTypeSelect(theme)}
             >
               <option value="">-- Select Type --</option>
               {Object.entries(QuestionTypes).map(([type, config]) => (
@@ -471,9 +515,9 @@ const GameBoard = () => {
                   key={type}
                   onClick={() => handleDrawCards(type)}
                   style={{
-                    ...styles.questionButton,
+                    ...styles.questionButton(theme),
                     ...(currentQuestionType === type
-                      ? styles.questionButtonActive
+                      ? styles.questionButtonActive(theme)
                       : {}),
                   }}
                 >
@@ -489,18 +533,20 @@ const GameBoard = () => {
         </div>
 
         {drawnCards.length > 0 && (
-          <div style={styles.drawnCards}>
-            <h3>Drawn Cards (Select {pickCount}):</h3>
+          <div style={styles.drawnCards(theme)}>
+            <h3 style={{ color: theme.colors.text }}>
+              Drawn Cards (Select {pickCount}):
+            </h3>
             <div style={styles.cardGrid}>
               {drawnCards.map((card, idx) => (
                 <div
                   key={idx}
                   onClick={() => handleSelectCard(card)}
                   style={{
-                    ...styles.selectableCard,
+                    ...styles.selectableCard(theme),
                     border: selectedCards.includes(card)
-                      ? "3px solid #4CAF50"
-                      : "2px solid #ccc",
+                      ? `3px solid ${theme.colors.borderActive}`
+                      : `2px solid ${theme.colors.borderDefault}`,
                   }}
                 >
                   <Card
@@ -512,11 +558,12 @@ const GameBoard = () => {
                 </div>
               ))}
             </div>
-            <button onClick={handleAddToHand} style={styles.addButton}>
+            <button onClick={handleAddToHand} style={styles.addButton(theme)}>
               {pickCount === 0 ? "Done" : "Add Selected to Hand"}
             </button>
           </div>
         )}
+        {error && <div style={styles.error(theme)}>{error}</div>}
 
         <Hand
           hand={gameState.hand}
@@ -528,8 +575,8 @@ const GameBoard = () => {
           onCardClick={handleCardClick}
         />
 
-        <div style={styles.deckInfo}>
-          <h3>Deck Info</h3>
+        <div style={styles.deckInfo(theme)}>
+          <h3 style={{ color: theme.colors.text }}>Deck Info</h3>
           <p>
             Deck Size:{" "}
             {gameState.hand.reduce(
@@ -548,9 +595,46 @@ const GameBoard = () => {
           </p>
           <p>Total Cards Drawn: {userStats.total_cards_drawn}</p>
           <p>Total Cards Played: {userStats.total_cards_played}</p>
-          <button onClick={handleResetClick} style={styles.resetButton}>
+          <button onClick={handleResetClick} style={styles.resetButton(theme)}>
             Reset Progress
           </button>
+        </div>
+
+        <div style={styles.footer(theme)}>
+          <button
+            onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+            style={styles.footerToggle(theme)}
+          >
+            {isAboutExpanded ? "▼" : "▶"} About This Site
+          </button>
+
+          {isAboutExpanded && (
+            <div style={styles.footerContent(theme)}>
+              <p style={styles.footerText(theme)}>
+                This is a fan-made version of the JetLag: The Game card game.
+                This project has no affiliation with, endorsement from, or
+                connection to the official JetLag: The Game or its creators. All
+                rights to the original game belong to their respective owners.
+              </p>
+              <div style={styles.footerLinks(theme)}>
+                <a
+                  href="https://github.com/JackCampbell5/JetLag-Hide-And-Seek"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.footerLink(theme)}
+                >
+                  GitHub Repository
+                </a>
+                <span style={{ color: theme.colors.text }}>•</span>
+                <a
+                  href="mailto:jdeveloper012@gmail.com"
+                  style={styles.footerLink(theme)}
+                >
+                  Contact: jdeveloper012@gmail.com
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </DndProvider>
@@ -558,22 +642,25 @@ const GameBoard = () => {
 };
 
 const styles = {
-  container: {
+  container: (theme) => ({
     padding: "20px",
     maxWidth: "1200px",
     margin: "0 auto",
-  },
-  header: {
+    backgroundColor: theme.colors.background,
+    minHeight: "100vh",
+  }),
+  header: (theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "20px",
     padding: "10px",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.header,
     borderRadius: "8px",
     flexWrap: "wrap",
     gap: "10px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   headerMobile: {
     flexDirection: "column",
     alignItems: "stretch",
@@ -595,73 +682,87 @@ const styles = {
     alignItems: "stretch",
     gap: "10px",
   },
-  welcomeText: {
-    whiteSpace: "nowrap",
+  themeToggle: {
+    padding: "8px 12px",
+    backgroundColor: "transparent",
+    border: "2px solid currentColor",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "18px",
+    transition: "all 0.2s ease",
   },
-  logoutButton: {
+  welcomeText: (theme) => ({
+    whiteSpace: "nowrap",
+    color: theme.colors.text,
+  }),
+  logoutButton: (theme) => ({
     padding: "8px 16px",
-    backgroundColor: "#f44336",
-    color: "white",
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-  },
-  error: {
-    backgroundColor: "#f44336",
-    color: "white",
+    transition: "background-color 0.2s ease",
+  }),
+  error: (theme) => ({
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.text,
     padding: "10px",
     borderRadius: "4px",
     marginBottom: "20px",
     textAlign: "center",
-  },
-  questionTypes: {
+  }),
+  questionTypes: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: theme.colors.backgroundAlt,
     borderRadius: "8px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   questionTypesHeaderMobile: {
     fontSize: "16px",
     marginBottom: "10px",
   },
-  questionTypeSelect: {
+  questionTypeSelect: (theme) => ({
     width: "100%",
     padding: "12px",
     fontSize: "16px",
-    backgroundColor: "#2196F3",
-    color: "white",
-    border: "2px solid #1976D2",
+    backgroundColor: theme.colors.secondary,
+    color: theme.colors.text,
+    border: `2px solid ${theme.colors.secondaryDark}`,
     borderRadius: "4px",
     cursor: "pointer",
     fontWeight: "bold",
-  },
+  }),
   buttonGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
     gap: "10px",
     marginTop: "10px",
   },
-  questionButton: {
+  questionButton: (theme) => ({
     padding: "15px",
-    backgroundColor: "#2196F3",
-    color: "white",
+    backgroundColor: theme.colors.secondary,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "bold",
-  },
-  questionButtonActive: {
-    backgroundColor: "#1976D2",
-    border: "3px solid #4CAF50",
-    boxShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
-  },
-  drawnCards: {
+    transition: "all 0.2s ease",
+  }),
+  questionButtonActive: (theme) => ({
+    backgroundColor: theme.colors.secondaryDark,
+    border: `3px solid ${theme.colors.borderActive}`,
+    boxShadow: `0 0 10px ${theme.colors.highlight}`,
+  }),
+  drawnCards: (theme) => ({
     marginBottom: "30px",
     padding: "20px",
-    backgroundColor: "#fff3cd",
+    backgroundColor: theme.colors.warning,
     borderRadius: "8px",
-  },
+    border: `1px solid ${theme.colors.border}`,
+  }),
   cardGrid: {
     display: "flex",
     gap: "10px",
@@ -669,16 +770,16 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "center",
   },
-  selectableCard: {
+  selectableCard: (theme) => ({
     cursor: "pointer",
     borderRadius: "8px",
-    transition: "border 0.2s",
-  },
-  addButton: {
+    transition: "border 0.2s ease",
+  }),
+  addButton: (theme) => ({
     marginTop: "15px",
     padding: "10px 20px",
-    backgroundColor: "#4CAF50",
-    color: "white",
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -687,26 +788,73 @@ const styles = {
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-  },
-  deckInfo: {
+    transition: "background-color 0.2s ease",
+  }),
+  deckInfo: (theme) => ({
     marginTop: "30px",
     padding: "20px",
-    backgroundColor: "#e3f2fd",
+    backgroundColor: theme.colors.info,
     borderRadius: "8px",
-  },
-  resetButton: {
+    border: `1px solid ${theme.colors.border}`,
+    color: theme.colors.text,
+  }),
+  resetButton: (theme) => ({
     marginTop: "15px",
     padding: "10px 20px",
-    backgroundColor: "#f44336",
-    color: "white",
+    backgroundColor: theme.colors.danger,
+    color: theme.colors.text,
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "bold",
-    transition: "background-color 0.2s",
+    transition: "background-color 0.2s ease",
     width: "100%",
-  },
+  }),
+  footer: (theme) => ({
+    marginTop: "30px",
+    padding: "15px",
+    backgroundColor: theme.colors.backgroundAlt,
+    borderRadius: "8px",
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  footerToggle: (theme) => ({
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "transparent",
+    color: theme.colors.text,
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    textAlign: "left",
+    transition: "background-color 0.2s ease",
+  }),
+  footerContent: (theme) => ({
+    marginTop: "15px",
+    padding: "15px",
+    backgroundColor: theme.colors.background,
+    borderRadius: "4px",
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  footerText: (theme) => ({
+    color: theme.colors.text,
+    lineHeight: "1.6",
+    marginBottom: "15px",
+  }),
+  footerLinks: (theme) => ({
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    alignItems: "center",
+    justifyContent: "center",
+  }),
+  footerLink: (theme) => ({
+    color: theme.colors.primary,
+    textDecoration: "none",
+    transition: "color 0.2s ease",
+  }),
 };
 
 export default GameBoard;

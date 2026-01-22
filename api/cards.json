@@ -57,6 +57,7 @@
   {
     "id": 6,
     "Type": "Action",
+    "color": "Pink",
     "name": "Randomize",
     "cards": 4,
     "Small": 0,
@@ -67,6 +68,7 @@
   {
     "id": 7,
     "Type": "Action",
+    "color": "Pink",
     "name": "Veto",
     "cards": 4,
     "Small": 0,
@@ -77,6 +79,7 @@
   {
     "id": 8,
     "Type": "Action",
+    "color": "Pink",
     "name": "Duplicate",
     "cards": 2,
     "Small": 0,
@@ -87,6 +90,7 @@
   {
     "id": 9,
     "Type": "Action",
+    "color": "Pink",
     "name": "Move",
     "cards": 1,
     "Small": 0,
@@ -97,6 +101,7 @@
   {
     "id": 10,
     "Type": "Action",
+    "color": "Pink",
     "name": "Discard 1 Draw 2",
     "cards": 4,
     "Small": 0,
@@ -107,6 +112,7 @@
   {
     "id": 11,
     "Type": "Action",
+    "color": "Pink",
     "name": "Discard 2 Draw 3",
     "cards": 4,
     "Small": 0,
@@ -212,7 +218,7 @@
     "cards": 1,
     "Small": 0.25,
     "Medium": 0.25,
-    "Large": 0.50,
+    "Large": 0.5,
     "description": "Send seekers on vacation to specific location",
     "casting_cost": {
       "discard": 0,

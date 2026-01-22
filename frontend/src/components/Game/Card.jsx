@@ -1,6 +1,7 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 import { getAllowedDifficulty } from "../../context/GameContext";
+import { useTheme, getCardBackgroundColor } from "../../context/ThemeContext";
 import { useIsMobile } from "../../hooks/useMediaQuery";
 
 const Card = ({
@@ -14,6 +15,7 @@ const Card = ({
   onCardClick,
   position,
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -47,19 +49,6 @@ const Card = ({
       : desc;
   };
 
-  const colorMap = {
-    Red: "#ff4444",
-    Orange: "#ff8c00",
-    Yellow: "#ffd700",
-    Blue: "#4169e1",
-    Green: "#32cd32",
-    Purple: "#9370db",
-    Pink: "#ff69b4",
-    Gray: "#808080",
-    Special: "#ff00ff",
-    Curse: "#8B008B", // Dark magenta for curse cards
-  };
-
   // Casting cost summary helper
   const getCastingCostSummary = (castingCost) => {
     if (!castingCost) return null;
@@ -71,26 +60,23 @@ const Card = ({
     return parts.length > 0 ? `Cost: ${parts.join(", ")}` : "No cost";
   };
 
-  // Action cards are colored purple, Curse cards are dark magenta
-  const backgroundColor =
-    card.Type === "Action"
-      ? "#9370db"
-      : card.Type === "Curse"
-        ? "#8B008B"
-        : colorMap[card.color] || "#ccc";
+  // Get background color from theme
+  const backgroundColor = getCardBackgroundColor(theme, card);
 
   return (
     <div
       ref={drag}
       style={{
-        ...styles.card,
+        ...styles.card(theme),
         ...(isMobile ? styles.cardMobile : {}),
         backgroundColor,
         opacity: isDragging ? 0.5 : 1,
         cursor: isDraggable ? "move" : "default",
-        border: isHighlighted ? "4px solid #FFD700" : "none",
+        border: isHighlighted
+          ? `4px solid ${theme.colors.borderHighlight}`
+          : "none",
         boxShadow: isHighlighted
-          ? "0 0 20px rgba(255, 215, 0, 0.8), 0 2px 5px rgba(0,0,0,0.2)"
+          ? `0 0 20px ${theme.colors.highlight}, 0 2px 5px rgba(0,0,0,0.2)`
           : "0 2px 5px rgba(0,0,0,0.2)",
         animation: isHighlighted ? "pulse 1s ease-in-out infinite" : "none",
         position: "relative",
@@ -103,52 +89,62 @@ const Card = ({
             onCardClick(card);
           }}
           style={{
-            ...styles.menuButton,
-            ...(isMobile ? styles.menuButtonMobile : {})
+            ...styles.menuButton(theme),
+            ...(isMobile ? styles.menuButtonMobile : {}),
           }}
           aria-label="Card menu"
         >
           ⋮
         </button>
       )}
-      <div style={{
-        ...styles.cardHeader,
-        ...(isMobile ? styles.cardHeaderMobile : {})
-      }}>
+      <div
+        style={{
+          ...styles.cardHeader,
+          ...(isMobile ? styles.cardHeaderMobile : {}),
+        }}
+      >
         <strong>{card.name || card.Type}</strong>
       </div>
       <div style={styles.cardBody}>
-        {card.color && (
-          <div style={{
-            ...styles.cardColor,
-            ...(isMobile ? styles.cardColorMobile : {})
-          }}>
+        {/* {card.color && (
+          <div
+            style={{
+              ...styles.cardColor,
+              ...(isMobile ? styles.cardColorMobile : {}),
+            }}
+          >
             {card.color}
           </div>
-        )}
+        )} */}
         {difficultyValue > 0 && (
-          <div style={{
-            ...styles.cardValues,
-            ...(isMobile ? styles.cardValuesMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.cardValues,
+              ...(isMobile ? styles.cardValuesMobile : {}),
+            }}
+          >
             <span>
               {allowedDifficulty[0]}: {difficultyValue}
             </span>
           </div>
         )}
         {card.Type === "Curse" && card.casting_cost && (
-          <div style={{
-            ...styles.castingCost,
-            ...(isMobile ? styles.castingCostMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.castingCost(theme),
+              ...(isMobile ? styles.castingCostMobile : {}),
+            }}
+          >
             {getCastingCostSummary(card.casting_cost)}
           </div>
         )}
         {card.description && (
-          <div style={{
-            ...styles.cardDescription,
-            ...(isMobile ? styles.cardDescriptionMobile : {})
-          }}>
+          <div
+            style={{
+              ...styles.cardDescription,
+              ...(isMobile ? styles.cardDescriptionMobile : {}),
+            }}
+          >
             {getShortDescription(card.description)}
           </div>
         )}
@@ -162,8 +158,8 @@ const Card = ({
                 onPlay();
               }}
               style={{
-                ...styles.actionButton,
-                ...(isMobile ? styles.actionButtonMobile : {})
+                ...styles.actionButton(theme),
+                ...(isMobile ? styles.actionButtonMobile : {}),
               }}
             >
               Play
@@ -176,9 +172,9 @@ const Card = ({
                 onDiscard();
               }}
               style={{
-                ...styles.actionButton,
+                ...styles.actionButton(theme),
                 ...(isMobile ? styles.actionButtonMobile : {}),
-                backgroundColor: "rgba(255,100,100,0.5)"
+                backgroundColor: theme.colors.buttonDanger,
               }}
             >
               Discard
@@ -191,19 +187,19 @@ const Card = ({
 };
 
 const styles = {
-  card: {
+  card: (theme) => ({
     width: "100%",
     height: "100%",
     minHeight: "160px",
     borderRadius: "8px",
     padding: "10px",
-    color: "white",
+    color: theme.colors.text,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
     margin: "0",
-  },
+  }),
   cardMobile: {
     minHeight: "140px",
     padding: "8px",
@@ -240,16 +236,16 @@ const styles = {
     fontSize: "10px",
     gap: "3px",
   },
-  castingCost: {
+  castingCost: (theme) => ({
     fontSize: "10px",
     marginTop: "8px",
     padding: "5px",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: theme.colors.overlayDark,
     borderRadius: "4px",
-    border: "1px solid rgba(255, 255, 255, 0.4)",
+    border: `1px solid ${theme.colors.overlayBorder}`,
     textAlign: "center",
     lineHeight: "1.3",
-  },
+  }),
   castingCostMobile: {
     fontSize: "8px",
     marginTop: "6px",
@@ -272,32 +268,33 @@ const styles = {
     gap: "5px",
     justifyContent: "space-between",
   },
-  actionButton: {
+  actionButton: (theme) => ({
     flex: 1,
     padding: "5px 8px",
-    backgroundColor: "rgba(255,255,255,0.3)",
-    border: "1px solid white",
+    backgroundColor: theme.colors.overlayLight,
+    border: `1px solid ${theme.colors.text}`,
     borderRadius: "4px",
-    color: "white",
+    color: theme.colors.text,
     cursor: "pointer",
     fontSize: "11px",
     fontWeight: "bold",
-  },
+    transition: "all 0.2s ease",
+  }),
   actionButtonMobile: {
     padding: "4px 6px",
     fontSize: "10px",
   },
-  menuButton: {
+  menuButton: (theme) => ({
     position: "absolute",
     top: "5px",
     right: "5px",
     width: "24px",
     height: "24px",
     padding: "0",
-    backgroundColor: "rgba(255,255,255,0.3)",
-    border: "1px solid rgba(255,255,255,0.5)",
+    backgroundColor: theme.colors.overlayLight,
+    border: `1px solid ${theme.colors.overlayWhite}`,
     borderRadius: "50%",
-    color: "white",
+    color: theme.colors.text,
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
@@ -307,7 +304,7 @@ const styles = {
     lineHeight: "1",
     transition: "all 0.2s ease",
     zIndex: 10,
-  },
+  }),
   menuButtonMobile: {
     width: "20px",
     height: "20px",

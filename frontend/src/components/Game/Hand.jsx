@@ -1,6 +1,7 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import Card from "./Card";
+import { useTheme } from "../../context/ThemeContext";
 import { useIsMobile } from "../../hooks/useMediaQuery";
 
 const HandSlot = ({
@@ -13,6 +14,7 @@ const HandSlot = ({
   gameSize = 5,
   onCardClick,
   isMobile = false,
+  theme,
 }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "CARD",
@@ -26,9 +28,9 @@ const HandSlot = ({
     <div
       ref={drop}
       style={{
-        ...styles.slot,
+        ...styles.slot(theme),
         ...(isMobile ? styles.slotMobile : {}),
-        backgroundColor: isOver ? "#e0e0e0" : "#f5f5f5",
+        backgroundColor: isOver ? theme.colors.borderLight : theme.colors.backgroundAlt,
       }}
     >
       {card ? (
@@ -44,7 +46,7 @@ const HandSlot = ({
         />
       ) : (
         <div style={{
-          ...styles.emptySlot,
+          ...styles.emptySlot(theme),
           ...(isMobile ? styles.emptySlotMobile : {})
         }}>
           Empty
@@ -63,6 +65,7 @@ const Hand = ({
   gameSize = 5,
   onCardClick,
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
 
   const handleDrop = (item, targetPosition) => {
@@ -99,7 +102,7 @@ const Hand = ({
       ...(isMobile ? styles.containerMobile : {})
     }}>
       <h2 style={{
-        ...styles.title,
+        ...styles.title(theme),
         ...(isMobile ? styles.titleMobile : {})
       }}>
         Your Hand (5 positions)
@@ -120,6 +123,7 @@ const Hand = ({
             gameSize={gameSize}
             onCardClick={onCardClick}
             isMobile={isMobile}
+            theme={theme}
           />
         ))}
       </div>
@@ -134,11 +138,11 @@ const styles = {
   containerMobile: {
     padding: "10px",
   },
-  title: {
+  title: (theme) => ({
     textAlign: "center",
     marginBottom: "20px",
-    color: "#333",
-  },
+    color: theme.colors.text,
+  }),
   titleMobile: {
     fontSize: "18px",
     marginBottom: "15px",
@@ -153,24 +157,24 @@ const styles = {
     gap: "5px",
     justifyContent: "space-evenly",
   },
-  slot: {
+  slot: (theme) => ({
     width: "140px",
     minHeight: "180px",
-    border: "2px dashed #ccc",
+    border: `2px dashed ${theme.colors.border}`,
     borderRadius: "8px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     transition: "background-color 0.2s",
-  },
+  }),
   slotMobile: {
     width: "110px",
     minHeight: "150px",
   },
-  emptySlot: {
-    color: "#999",
+  emptySlot: (theme) => ({
+    color: theme.colors.textMuted,
     fontSize: "14px",
-  },
+  }),
   emptySlotMobile: {
     fontSize: "12px",
   },
