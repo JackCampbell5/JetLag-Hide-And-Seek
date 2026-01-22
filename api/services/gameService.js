@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { generateRandomCards, getAllowedDifficulty } from './cardService.js';
 
 const prisma = new PrismaClient();
+const HAND_SIZE = parseInt(process.env.HAND_SIZE) || 5;
 
 export async function getOrCreateGameState(userId, gameSize = 5) {
   let gameState = await prisma.userGameState.findUnique({
@@ -9,24 +10,46 @@ export async function getOrCreateGameState(userId, gameSize = 5) {
   });
 
   if (!gameState) {
-    // Initialize empty hand with 5 null positions
+    // Initialize empty hand with null positions
     gameState = await prisma.userGameState.create({
       data: {
         userId,
-        hand: [null, null, null, null, null],
+        hand: Array(HAND_SIZE).fill(null),
         gameSize,
         deck: [],
         discardPile: [],
       },
     });
+  } else {
+    // Check if hand size needs to be adjusted to match HAND_SIZE environment variable
+    const currentHandSize = gameState.hand.length;
+    if (currentHandSize !== HAND_SIZE) {
+      const newHand = [...gameState.hand];
+
+      if (currentHandSize < HAND_SIZE) {
+        // Add empty slots to match new size
+        while (newHand.length < HAND_SIZE) {
+          newHand.push(null);
+        }
+      } else {
+        // Remove slots from the end (keep first HAND_SIZE cards)
+        newHand.splice(HAND_SIZE);
+      }
+
+      // Update the game state with the resized hand
+      gameState = await prisma.userGameState.update({
+        where: { userId },
+        data: { hand: newHand },
+      });
+    }
   }
 
   return gameState;
 }
 
 export async function updateUserHand(userId, newHand) {
-  if (!Array.isArray(newHand) || newHand.length !== 5) {
-    throw new Error('Hand must be an array of exactly 5 positions');
+  if (!Array.isArray(newHand) || newHand.length !== HAND_SIZE) {
+    throw new Error(`Hand must be an array of exactly ${HAND_SIZE} positions`);
   }
 
   return await prisma.userGameState.update({
@@ -56,7 +79,7 @@ export async function playCardFromHand(userId, handPosition, discardPositions = 
   }
 
   const hand = gameState.hand;
-  if (handPosition < 0 || handPosition >= 5) {
+  if (handPosition < 0 || handPosition >= HAND_SIZE) {
     throw new Error('Invalid hand position');
   }
 
@@ -82,7 +105,7 @@ export async function playCardFromHand(userId, handPosition, discardPositions = 
 
       // Validate discard positions
       for (const pos of discardPositions) {
-        if (pos < 0 || pos >= 5 || pos === handPosition) {
+        if (pos < 0 || pos >= HAND_SIZE || pos === handPosition) {
           throw new Error('Invalid discard position');
         }
         if (!hand[pos]) {
@@ -183,7 +206,7 @@ async function handleDiscardDraw(userId, gameState, playedPosition, discardPosit
 
   // Validate discard positions
   for (const pos of discardPositions) {
-    if (pos < 0 || pos >= 5 || pos === playedPosition) {
+    if (pos < 0 || pos >= HAND_SIZE || pos === playedPosition) {
       throw new Error('Invalid discard position');
     }
     if (!hand[pos]) {
@@ -249,7 +272,7 @@ export async function placePendingCards(userId, cardsToPlace, discardPositions) 
   }
 
   for (const pos of discardPositions) {
-    if (pos < 0 || pos >= 5) {
+    if (pos < 0 || pos >= HAND_SIZE) {
       throw new Error('Invalid discard position');
     }
     if (!hand[pos]) {
