@@ -432,7 +432,7 @@ const GameBoard = () => {
               color: theme.colors.text,
             }}
           >
-            JetLag Card Game
+            JetLag (Unofficial) Card Game
           </h1>
           <div
             style={{

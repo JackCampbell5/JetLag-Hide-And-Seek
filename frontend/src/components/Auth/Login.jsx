@@ -36,7 +36,7 @@ const Login = () => {
   return (
     <div style={styles.container(theme)}>
       <div style={styles.card(theme)}>
-        <h1 style={styles.title(theme)}>JetLag Card Game</h1>
+        <h1 style={styles.title(theme)}>JetLag (Unofficial)Card Game</h1>
         <h2 style={styles.subtitle(theme)}>Login</h2>
 
         {error && <div style={styles.error(theme)}>{error}</div>}
