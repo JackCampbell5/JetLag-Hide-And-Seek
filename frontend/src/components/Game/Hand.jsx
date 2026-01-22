@@ -95,7 +95,7 @@ const Hand = ({
     onUpdateHand(newHand);
   };
 
-  // Hand always has 5 positions
+  // Hand displays all available positions
   return (
     <div style={{
       ...styles.container,
@@ -105,7 +105,7 @@ const Hand = ({
         ...styles.title(theme),
         ...(isMobile ? styles.titleMobile : {})
       }}>
-        Your Hand (5 positions)
+        Your Hand ({hand.length} positions)
       </h2>
       <div style={{
         ...styles.handContainer,

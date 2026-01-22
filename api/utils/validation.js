@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const HAND_SIZE = parseInt(process.env.HAND_SIZE) || 5;
+
 // User schemas
 export const userCreateSchema = z.object({
   username: z.string().min(3).max(50),
@@ -25,7 +27,7 @@ export const drawCardsSchema = z.object({
 });
 
 export const updateHandSchema = z.object({
-  hand: z.array(z.any()).length(5),
+  hand: z.array(z.any()).length(HAND_SIZE),
 });
 
 export const updateHandSizeSchema = z.object({
@@ -33,13 +35,13 @@ export const updateHandSizeSchema = z.object({
 });
 
 export const playCardSchema = z.object({
-  hand_position: z.number().int().min(0).max(4),
-  discard_positions: z.array(z.number().int().min(0).max(4)).nullable().optional(),
+  hand_position: z.number().int().min(0).max(HAND_SIZE - 1),
+  discard_positions: z.array(z.number().int().min(0).max(HAND_SIZE - 1)).nullable().optional(),
 });
 
 export const placePendingCardsSchema = z.object({
   cards_to_place: z.array(z.any()),
-  discard_positions: z.array(z.number().int().min(0).max(4)),
+  discard_positions: z.array(z.number().int().min(0).max(HAND_SIZE - 1)),
 });
 
 // Stats schemas

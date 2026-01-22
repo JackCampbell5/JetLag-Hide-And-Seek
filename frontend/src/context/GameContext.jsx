@@ -19,7 +19,7 @@ export const GameProvider = ({ children }) => {
     return saved ? Number(saved) : 5;
   });
   const [gameState, setGameState] = useState({
-    hand: [null, null, null, null, null],
+    hand: [],
     deck_size: 0,
     deck_composition: {},
   });
