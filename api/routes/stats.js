@@ -77,29 +77,93 @@ export default async function statsRoutes(fastify) {
       try {
         const userId = request.user.id;
 
-        // Reset user game state (hand)
-        await prisma.userGameState.updateMany({
+        // Get existing data to archive
+        const existingGameState = await prisma.userGameState.findUnique({
           where: { userId },
+        });
+
+        const existingStats = await prisma.userStatistics.findUnique({
+          where: { userId },
+        });
+
+        // Create archive entry in game history with timestamp
+        const archiveTimestamp = Date.now();
+        const archiveData = {
+          timestamp: archiveTimestamp,
+          userId: userId,
+          gameState: existingGameState
+            ? {
+                hand: existingGameState.hand,
+                gameSize: existingGameState.gameSize,
+                deck: existingGameState.deck,
+                discardPile: existingGameState.discardPile,
+              }
+            : null,
+          statistics: existingStats
+            ? {
+                totalCardsDrawn: existingStats.totalCardsDrawn,
+                totalCardsPlayed: existingStats.totalCardsPlayed,
+                gamesCompleted: existingStats.gamesCompleted,
+              }
+            : null,
+        };
+
+        // Store archive in game history
+        await prisma.gameHistory.create({
           data: {
-            hand: Array(HAND_SIZE).fill(null),
-            deck: [],
-            discardPile: [],
+            userId,
+            actionType: "reset_archive",
+            actionData: archiveData,
           },
         });
 
-        // Reset user statistics
-        await prisma.userStatistics.updateMany({
-          where: { userId },
-          data: {
-            totalCardsDrawn: 0,
-            totalCardsPlayed: 0,
-            gamesCompleted: 0,
-          },
-        });
+        // Reset game state
+        if (existingGameState) {
+          await prisma.userGameState.update({
+            where: { userId },
+            data: {
+              hand: Array(HAND_SIZE).fill(null),
+              deck: [],
+              discardPile: [],
+            },
+          });
+        } else {
+          await prisma.userGameState.create({
+            data: {
+              userId,
+              hand: Array(HAND_SIZE).fill(null),
+              gameSize: 5,
+              deck: [],
+              discardPile: [],
+            },
+          });
+        }
+
+        // Reset statistics - store original userId in gamesCompleted as requested
+        if (existingStats) {
+          await prisma.userStatistics.update({
+            where: { userId },
+            data: {
+              totalCardsDrawn: 0,
+              totalCardsPlayed: 0,
+              gamesCompleted: userId, // Store userId in gamesCompleted as requested
+            },
+          });
+        } else {
+          await prisma.userStatistics.create({
+            data: {
+              userId,
+              totalCardsDrawn: 0,
+              totalCardsPlayed: 0,
+              gamesCompleted: userId, // Store userId in gamesCompleted as requested
+            },
+          });
+        }
 
         return reply.send({
           success: true,
-          message: "User progress has been reset",
+          message: "User progress has been reset and archived in game history",
+          archiveTimestamp: archiveTimestamp,
         });
       } catch (error) {
         fastify.log.error(error);
