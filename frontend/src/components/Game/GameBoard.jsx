@@ -59,6 +59,7 @@ const GameBoard = () => {
     total_cards_played: 0,
     games_completed: 0,
   });
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const gameSizeConvert = { 3: "Small", 4: "Medium", 5: "Large" };
 
   // Fetch user statistics on component mount
@@ -598,6 +599,43 @@ const GameBoard = () => {
             Reset Progress
           </button>
         </div>
+
+        <div style={styles.footer(theme)}>
+          <button
+            onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+            style={styles.footerToggle(theme)}
+          >
+            {isAboutExpanded ? "▼" : "▶"} About This Site
+          </button>
+
+          {isAboutExpanded && (
+            <div style={styles.footerContent(theme)}>
+              <p style={styles.footerText(theme)}>
+                This is a fan-made version of the JetLag: The Game card game.
+                This project has no affiliation with, endorsement from, or
+                connection to the official JetLag: The Game or its creators. All
+                rights to the original game belong to their respective owners.
+              </p>
+              <div style={styles.footerLinks(theme)}>
+                <a
+                  href="https://github.com/JackCampbell5/JetLag-Hide-And-Seek"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.footerLink(theme)}
+                >
+                  GitHub Repository
+                </a>
+                <span style={{ color: theme.colors.text }}>•</span>
+                <a
+                  href="mailto:jdeveloper012@gmail.com"
+                  style={styles.footerLink(theme)}
+                >
+                  Contact: jdeveloper012@gmail.com
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </DndProvider>
   );
@@ -772,6 +810,50 @@ const styles = {
     fontWeight: "bold",
     transition: "background-color 0.2s ease",
     width: "100%",
+  }),
+  footer: (theme) => ({
+    marginTop: "30px",
+    padding: "15px",
+    backgroundColor: theme.colors.backgroundAlt,
+    borderRadius: "8px",
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  footerToggle: (theme) => ({
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "transparent",
+    color: theme.colors.text,
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    textAlign: "left",
+    transition: "background-color 0.2s ease",
+  }),
+  footerContent: (theme) => ({
+    marginTop: "15px",
+    padding: "15px",
+    backgroundColor: theme.colors.background,
+    borderRadius: "4px",
+    border: `1px solid ${theme.colors.border}`,
+  }),
+  footerText: (theme) => ({
+    color: theme.colors.text,
+    lineHeight: "1.6",
+    marginBottom: "15px",
+  }),
+  footerLinks: (theme) => ({
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    alignItems: "center",
+    justifyContent: "center",
+  }),
+  footerLink: (theme) => ({
+    color: theme.colors.primary,
+    textDecoration: "none",
+    transition: "color 0.2s ease",
   }),
 };
 
