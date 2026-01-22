@@ -106,7 +106,7 @@ const Card = ({
         <strong>{card.name || card.Type}</strong>
       </div>
       <div style={styles.cardBody}>
-        {card.color && (
+        {/* {card.color && (
           <div
             style={{
               ...styles.cardColor,
@@ -115,7 +115,7 @@ const Card = ({
           >
             {card.color}
           </div>
-        )}
+        )} */}
         {difficultyValue > 0 && (
           <div
             style={{
