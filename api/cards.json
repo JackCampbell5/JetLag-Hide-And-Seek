@@ -88,17 +88,6 @@
     "description": "Creates a copy of another card in your hand. Choose wisely to duplicate your best time bonus or save a useful action card."
   },
   {
-    "id": 9,
-    "Type": "Action",
-    "color": "Pink",
-    "name": "Move",
-    "cards": 1,
-    "Small": 0,
-    "Medium": 0,
-    "Large": 0,
-    "description": "Allows you to reposition a card to a different slot in your hand. The rarest action card for strategic hand management."
-  },
-  {
     "id": 10,
     "Type": "Action",
     "color": "Pink",
@@ -406,7 +395,7 @@
       "location": "You must be at the restaurant",
       "die_roll": null
     },
-    "curse_text": "Find a restaurant within your zone that explicitly serves food from a specific foreign country. The seekers must visit a restaurant serving food from a country that is equal or greater distance away before asking another question."
+    "curse_text": "Find a restaurant within your zone that explicitly serves food from a specific foreign country. The seekers must visit a restaurant serving food from a country that is equal or greater distance away before asking another question. Food does not need to be purchased or consumed, only visiting the restaurant is required."
   },
   {
     "id": 28,
