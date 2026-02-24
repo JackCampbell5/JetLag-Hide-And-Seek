@@ -319,7 +319,7 @@ const styles = {
   valueNumber: (theme) => ({
     fontSize: "18px",
     fontWeight: "bold",
-    color: theme.colors.secondary,
+    color: theme.colors.textSecondary,
   }),
   currentValue: (theme) => ({
     textAlign: "center",
