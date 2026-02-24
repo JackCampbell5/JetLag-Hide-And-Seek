@@ -106,7 +106,11 @@ const GameBoard = () => {
       const statsResponse = await stats.getUserStats();
       setUserStats(statsResponse.data);
     } catch (err) {
-      setError("Failed to draw cards");
+      if (err.deck_exhausted) {
+        setError("The deck has run out of cards! Please reset progress to start a new game.");
+      } else {
+        setError("Failed to draw cards");
+      }
     }
   };
 

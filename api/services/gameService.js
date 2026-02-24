@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { generateRandomCards, getAllowedDifficulty } from './cardService.js';
+import { buildDeck, drawFromDeck, consumeFromDeck } from './cardService.js';
 
 const prisma = new PrismaClient();
 const HAND_SIZE = parseInt(process.env.HAND_SIZE) || 5;
@@ -52,9 +52,55 @@ export async function updateUserHand(userId, newHand) {
     throw new Error(`Hand must be an array of exactly ${HAND_SIZE} positions`);
   }
 
+  const gameState = await prisma.userGameState.findUnique({ where: { userId } });
+  if (!gameState) throw new Error('Game state not found');
+
+  let deck = Array.isArray(gameState.deck) ? gameState.deck : [];
+  const hasPending = deck.some(c => c._pending);
+
+  if (hasPending) {
+    const oldHand = gameState.hand;
+
+    // Count card IDs in old hand to detect genuinely new cards (not rearranged)
+    const oldIdCounts = {};
+    for (const card of oldHand) {
+      if (card) oldIdCounts[card.id] = (oldIdCounts[card.id] || 0) + 1;
+    }
+    const newIdCounts = {};
+    for (const card of newHand) {
+      if (card) newIdCounts[card.id] = (newIdCounts[card.id] || 0) + 1;
+    }
+
+    // For each card id appearing more in new hand than old, those extras are genuinely new
+    let updatedDeck = [...deck];
+    for (const [idStr, newCount] of Object.entries(newIdCounts)) {
+      const id = parseInt(idStr);
+      const oldCount = oldIdCounts[id] || 0;
+      const genuinelyNew = newCount - oldCount;
+      for (let k = 0; k < genuinelyNew; k++) {
+        // Remove one pending card with this id from the deck
+        const pendingIdx = updatedDeck.findIndex(c => c._pending && c.id === id);
+        if (pendingIdx !== -1) {
+          updatedDeck.splice(pendingIdx, 1);
+        }
+      }
+    }
+
+    // Clear remaining pending markers (unselected drawn cards return to pool)
+    updatedDeck = updatedDeck.map(c => {
+      if (c._pending) {
+        const { _pending, ...rest } = c;
+        return rest;
+      }
+      return c;
+    });
+
+    deck = updatedDeck;
+  }
+
   return await prisma.userGameState.update({
     where: { userId },
-    data: { hand: newHand },
+    data: { hand: newHand, deck },
   });
 }
 
@@ -63,10 +109,37 @@ export async function updateGameSize(userId, newGameSize) {
     throw new Error('Game size must be between 3 and 5');
   }
 
+  // Rebuild deck for the new game size
+  const newDeck = buildDeck(newGameSize);
+
   return await prisma.userGameState.update({
     where: { userId },
-    data: { gameSize: newGameSize },
+    data: { gameSize: newGameSize, deck: newDeck },
   });
+}
+
+export async function drawCardsForUser(userId, count) {
+  let gameState = await prisma.userGameState.findUnique({ where: { userId } });
+  if (!gameState) {
+    gameState = await getOrCreateGameState(userId);
+  }
+
+  let deck = Array.isArray(gameState.deck) ? gameState.deck : [];
+
+  // Initialize deck on first draw
+  if (deck.length === 0) {
+    deck = buildDeck(gameState.gameSize);
+  }
+
+  // Draw from deck (clears old pending, marks new ones)
+  const { drawn, updatedDeck } = drawFromDeck(deck, count);
+
+  await prisma.userGameState.update({
+    where: { userId },
+    data: { deck: updatedDeck },
+  });
+
+  return drawn;
 }
 
 export async function playCardFromHand(userId, handPosition, discardPositions = null) {
@@ -227,8 +300,12 @@ async function handleDiscardDraw(userId, gameState, playedPosition, discardPosit
     hand[pos] = null;
   }
 
-  // Draw new cards
-  const drawnCards = generateRandomCards(drawCount, gameState.gameSize);
+  // Draw new cards from deck (immediately consumed — no pending step)
+  let deck = Array.isArray(gameState.deck) ? gameState.deck : [];
+  if (deck.length === 0) {
+    deck = buildDeck(gameState.gameSize);
+  }
+  const { drawn: drawnCards, updatedDeck } = consumeFromDeck(deck, drawCount);
 
   // Try to auto-place cards
   const emptySlots = hand
@@ -249,7 +326,7 @@ async function handleDiscardDraw(userId, gameState, playedPosition, discardPosit
 
   await prisma.userGameState.update({
     where: { userId },
-    data: { hand, discardPile },
+    data: { hand, discardPile, deck: updatedDeck },
   });
 
   return { drawnCards, autoPlaced, placedPositions };

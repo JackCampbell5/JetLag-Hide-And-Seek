@@ -15,8 +15,9 @@ import {
   logGameAction,
   updateStatistics,
   getDeckComposition,
+  drawCardsForUser,
 } from '../services/gameService.js';
-import { generateRandomCards, getDrawCount } from '../services/cardService.js';
+import { getDrawCount } from '../services/cardService.js';
 
 const prisma = new PrismaClient();
 
@@ -44,11 +45,10 @@ export default async function gameRoutes(fastify) {
     try {
       const { question_type } = drawCardsSchema.parse(request.body);
 
-      const gameState = await getOrCreateGameState(request.user.id);
       const { draw, pick } = getDrawCount(question_type);
 
-      // Generate random cards based on game size
-      const cards = generateRandomCards(draw, gameState.gameSize);
+      // Draw cards from the finite deck
+      const cards = await drawCardsForUser(request.user.id, draw);
 
       // Log action
       await logGameAction(request.user.id, 'draw', {
@@ -66,6 +66,9 @@ export default async function gameRoutes(fastify) {
         pick_count: pick,
       });
     } catch (error) {
+      if (error.code === 'DECK_EXHAUSTED') {
+        return reply.code(409).send({ error: error.message, deck_exhausted: true });
+      }
       if (error.name === 'ZodError') {
         return reply.code(400).send({ error: error.errors });
       }

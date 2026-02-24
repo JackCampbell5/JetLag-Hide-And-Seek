@@ -72,6 +72,12 @@ export const GameProvider = ({ children }) => {
       setPickCount(response.data.pick_count);
       return response.data;
     } catch (error) {
+      // Attach deck_exhausted flag so callers can show a specific message
+      if (error.response?.data?.deck_exhausted) {
+        const deckError = new Error(error.response.data.error);
+        deckError.deck_exhausted = true;
+        throw deckError;
+      }
       console.error('Failed to draw cards:', error);
       throw error;
     } finally {
