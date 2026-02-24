@@ -119,6 +119,9 @@ const GameBoard = () => {
       setSelectedCards(selectedCards.filter((c) => c !== card));
     } else if (selectedCards.length < pickCount) {
       setSelectedCards([...selectedCards, card]);
+    } else {
+      // At max selection: drop the first picked card, add the new one
+      setSelectedCards([...selectedCards.slice(1), card]);
     }
   };
 
