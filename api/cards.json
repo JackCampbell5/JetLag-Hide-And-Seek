@@ -63,7 +63,7 @@
     "Small": 0,
     "Medium": 0,
     "Large": 0,
-    "description": "Shuffles your current hand into random order. Use when you want to reset card positions or change your hand layout."
+    "description": "When played in response to any question, the Randomize powerup forces the seekers to randomly select a different question from the same category using a random number generator or dice."
   },
   {
     "id": 7,
